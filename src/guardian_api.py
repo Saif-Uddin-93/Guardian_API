@@ -1,8 +1,16 @@
 import requests
 import json
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+api_keywords = [
+
+]
 
 def build_api_url(arg_1:str = "tech") -> str:
-    return f"https://content.guardianapis.com/search?q={arg_1}&api-key=test"
+    return f"https://content.guardianapis.com/search?q={arg_1}&api-key={os.getenv('test-key')}"
 
 def fetch_api(url:str) -> json:
     return requests.get(url).json()

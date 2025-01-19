@@ -5,3 +5,5 @@ moto[s3]
 boto3
 pika
 requests
+django
+python-dotenv
