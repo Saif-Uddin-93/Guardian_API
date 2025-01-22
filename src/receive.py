@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import pika, sys, os
+import json
+from guardian_api import output_to_json_file
 
 def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
@@ -8,7 +10,9 @@ def main():
     channel.queue_declare(queue='hello')
 
     def callback(ch, method, properties, body):
-        print(f" [x] Received {body}")
+        json_body = json.dumps(body)
+        print(f" [x] Received {json_body}")
+        output_to_json_file(body)
 
     channel.basic_consume(queue='hello', on_message_callback=callback, auto_ack=True)
 

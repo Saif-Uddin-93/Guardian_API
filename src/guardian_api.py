@@ -27,3 +27,5 @@ def get_guardian_data(arg_1:str, arg_2:str = None) -> None:
         output_to_json_file(fetch_api(build_api_url(arg_1)))
 
 get_guardian_data("tech")
+
+# print(json.dumps(fetch_api("tech")))
