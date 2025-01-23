@@ -1,13 +1,18 @@
 #!/usr/bin/env python
-import pika, sys, os
-import json
+import pika, sys, os, json
 from guardian_api import output_to_json_file
+from dotenv import load_dotenv
+
+load_dotenv()
+
+rabbit_user = os.getenv("rabbit-user")
+rabbit_pass = os.getenv("rabbit-pass")
 
 def main():
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    credentials = pika.PlainCredentials(rabbit_user, rabbit_pass)
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host='fileserver', port=5672, virtual_host='/', credentials=credentials))
     channel = connection.channel()
-
-    channel.queue_declare(queue='hello')
+    channel.queue_declare(queue='queue')
 
     def callback(ch, method, properties, body):
         json_body = json.dumps(body)
@@ -20,7 +25,7 @@ def main():
     channel.start_consuming()
 
 if __name__ == '__main__':
-    try:
+    try: 
         main()
     except KeyboardInterrupt:
         print('\nInterrupted')
