@@ -11,12 +11,12 @@ credentials = pika.PlainCredentials(rabbit_user, rabbit_pass)
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='fileserver', port=5672, virtual_host='/', credentials=credentials))
 channel = connection.channel()
 
-channel.queue_declare(queue='hello')
+channel.queue_declare(queue='queue')
 
 json_response : json = fetch_api(build_api_url("tech"))
 
 channel.basic_publish(exchange='',
-                      routing_key='hello',
+                      routing_key='queue',
                       body = json_response)
 print("[x] Sent json")
 
