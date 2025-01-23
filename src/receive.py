@@ -7,10 +7,11 @@ load_dotenv()
 
 rabbit_user = os.getenv("rabbit-user")
 rabbit_pass = os.getenv("rabbit-pass")
+rabbit_host = os.getenv("rabbit-host")
 
-def main():
+def main() -> None:
     credentials = pika.PlainCredentials(rabbit_user, rabbit_pass)
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='fileserver', port=5672, virtual_host='/', credentials=credentials))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbit_host, port=5672, virtual_host='/', credentials=credentials))
     channel = connection.channel()
     channel.queue_declare(queue='queue')
 
