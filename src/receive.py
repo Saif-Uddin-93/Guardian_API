@@ -16,9 +16,9 @@ def main() -> None:
     channel.queue_declare(queue='queue')
 
     def callback(ch, method, properties, body):
-        json_body = json.dumps(body)
-        print(f" [x] Received {json_body}")
-        output_to_json_file(body)
+        json_body = json.loads(body)
+        print(f" [x] Received json")
+        output_to_json_file(json_body)
 
     channel.basic_consume(queue='queue', on_message_callback=callback, auto_ack=True)
 

@@ -10,7 +10,7 @@ api_keywords = [
 ]
 
 def build_api_url(arg_1:str = "tech") -> str:
-    return f"https://content.guardianapis.com/search?q={arg_1}&api-key={os.getenv('test-key')}"
+    return f"https://content.guardianapis.com/search?q={arg_1}&show-blocks=body&api-key={os.getenv('test-key')}"
 
 def fetch_api(url:str) -> json:
     return requests.get(url).json()

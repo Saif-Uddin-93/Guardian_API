@@ -14,7 +14,7 @@ channel = connection.channel()
 
 channel.queue_declare(queue='queue')
 
-json_response : json = fetch_api(build_api_url("tech"))
+json_response : json = json.dumps(fetch_api(build_api_url("tech")))
 
 channel.basic_publish(exchange='',
                       routing_key='queue',
