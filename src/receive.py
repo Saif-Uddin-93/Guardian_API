@@ -13,7 +13,9 @@ def main() -> None:
     credentials = pika.PlainCredentials(rabbit_user, rabbit_pass)
     connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbit_host, port=5672, virtual_host='/', credentials=credentials))
     channel = connection.channel()
-    channel.queue_declare(queue='queue')
+    channel.queue_declare(queue='queue', durable=True, arguments = {
+        "x-message-ttl": 259200000,  # TTL in milliseconds (3 days)
+    })
 
     def callback(ch, method, properties, body):
         json_body = json.loads(body)
