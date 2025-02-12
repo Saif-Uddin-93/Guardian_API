@@ -11,4 +11,4 @@ def test_recieve_messages_from_sqs(sqs_client):
     send_message_to_sqs(url = queue_url, message = message, client = sqs_client)
     queue_messages = receive_messages_from_sqs(queue_url, sqs_client)
     print(queue_messages)
-    assert queue_messages["Messages"][0]["Body"] == message
+    assert queue_messages[0]["Body"] == message

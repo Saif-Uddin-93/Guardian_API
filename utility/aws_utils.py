@@ -57,7 +57,7 @@ def create_sqs_queue(queue_name: str, client = sqs_client):
             'MessageRetentionPeriod': '259200000' # 3 days
         }
     )
-    # queue_url = queue["QueueUrl"]
+
 
 def send_message_to_sqs(url: str, message: str, client = sqs_client):
     try:
@@ -91,7 +91,11 @@ def send_message_to_sqs(url: str, message: str, client = sqs_client):
 
 
 def receive_messages_from_sqs(url : str, client = sqs_client) -> list:
-    return client.receive_message(QueueUrl=url)
+    response = client.receive_message(QueueUrl=url)
+    if "Messages" in response:
+        return response["Messages"]
+    else:
+        raise Exception("No messages found in the queue")
 
 
 s3_client = boto3.client('s3', region_name='eu-west-2')
