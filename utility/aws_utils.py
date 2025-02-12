@@ -1,6 +1,6 @@
 import boto3
 import os
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, BotoCoreError
 from dotenv import load_dotenv
 
 load_dotenv('.env')
@@ -49,15 +49,50 @@ region_name = "eu-west-2"
 
 # sqs client
 sqs_client = boto3.client('sqs');
-response = response = sqs_client.create_queue(
-    QueueName='Test',
-    Attributes={
-        'DelaySeconds': '60',
-        'MessageRetentionPeriod': '259200000' # 3 days
-    }
-)
-queue_url = response["QueueUrl"]
-queue = sqs_client.Queue(queue_url)
+def create_sqs_queue(queue_name: str, client = sqs_client):
+    return client.create_queue(
+        QueueName = queue_name,
+        Attributes = {
+            'DelaySeconds': '0',
+            'MessageRetentionPeriod': '259200000' # 3 days
+        }
+    )
+    # queue_url = queue["QueueUrl"]
+
+def send_message_to_sqs(url: str, message: str, client = sqs_client):
+    try:
+        response = client.send_message(
+            QueueUrl=url, 
+            MessageBody=message
+        )
+        
+        # Check if the message was successfully sent
+        if "MessageId" in response:
+            print(f"Message sent successfully! MessageId: {response['MessageId']}")
+            return response['MessageId']
+        else:
+            print("Message sending failed: No MessageId returned")
+            return None
+
+    except ClientError as e:
+        # Handle AWS Client Errors
+        print(f"ClientError: {e.response['Error']['Message']}")
+        return None
+
+    except BotoCoreError as e:
+        # Handle boto3-related errors
+        print(f"BotoCoreError: {str(e)}")
+        return None
+
+    except Exception as e:
+        # Catch any other unexpected exceptions
+        print(f"Unexpected error: {str(e)}")
+        return None
+
+
+def receive_messages_from_sqs(url : str, client = sqs_client) -> list:
+    return client.receive_message(QueueUrl=url)
+
 
 s3_client = boto3.client('s3', region_name='eu-west-2')
 bucket_name = os.environ.get('s3_bucket')
