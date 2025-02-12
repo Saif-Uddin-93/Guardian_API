@@ -47,6 +47,17 @@ region_name = "eu-west-2"
 #         ForceDeleteWithoutRecovery=True
 #     )
 
+# sqs client
+sqs_client = boto3.client('sqs');
+response = response = sqs_client.create_queue(
+    QueueName='Test',
+    Attributes={
+        'DelaySeconds': '60',
+        'MessageRetentionPeriod': '259200000' # 3 days
+    }
+)
+queue_url = response["QueueUrl"]
+queue = sqs_client.Queue(queue_url)
 
 s3_client = boto3.client('s3', region_name='eu-west-2')
 bucket_name = os.environ.get('s3_bucket')
