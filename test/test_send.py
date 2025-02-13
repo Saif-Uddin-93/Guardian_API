@@ -6,10 +6,10 @@ from utility.aws_utils import create_sqs_queue, send_message_to_sqs
 
 def test_send_message_to_sqs(sqs_client):
     # Create a SQS queue
-    queue = create_sqs_queue("Test")
+    queue = create_sqs_queue("Test", client = sqs_client)
     queue_url = queue["QueueUrl"]
     message = "Test message."
     
-    result = send_message_to_sqs(queue_url, message)
+    result = send_message_to_sqs(queue_url, message, client = sqs_client)
         
     assert result

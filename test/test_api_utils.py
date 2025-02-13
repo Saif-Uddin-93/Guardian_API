@@ -10,6 +10,7 @@ def test_api_call_successful_with_only_search_term():
     result = get_guardian_data(search_term="tech")
     assert result["response"]["status"] == "ok"
 
+
 def test_api_url_formatted_correctly_with_options_included():
     opts = [
         ["from-date","2020-01-01"],
