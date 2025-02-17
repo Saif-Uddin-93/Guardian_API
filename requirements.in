@@ -8,3 +8,4 @@ requests
 django
 python-dotenv
 pdoc
+flake8

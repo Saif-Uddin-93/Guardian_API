@@ -3,49 +3,9 @@ import os
 from botocore.exceptions import ClientError, BotoCoreError
 from dotenv import load_dotenv
 
-load_dotenv('.env')
+load_dotenv()
 
 region_name = "eu-west-2"
-
-# client = boto3.client('secretsmanager', region_name='eu-west-2')
-
-
-# def credentials_storer(secret_identifier, userId, password, client=client):
-#     response = client.create_secret(
-#         Name=secret_identifier,
-#         SecretString='''{
-#     "username":"userId",
-#     "password":"password"
-# }'''
-#     )
-#     print(response['Name'])
-
-
-# def list_all_secrets():
-#     response = client.list_secrets()
-#     print(len(response['SecretList']), "secret(s) available")
-#     for i in response['SecretList']:
-#         print(i['Name'])
-
-
-# def secret_retriever(secret_identifier):
-#     secret_name = secret_identifier
-#     try:
-#         get_secret_value_response = client.get_secret_value(
-#             SecretId=secret_name
-#         )
-#     except ClientError as e:
-#         raise e
-
-#     secret = get_secret_value_response['SecretString']
-#     return secret
-
-
-# def secret_delete(secret_identifier):
-#     client.delete_secret(
-#         SecretId=secret_identifier,
-#         ForceDeleteWithoutRecovery=True
-#     )
 
 # sqs client
 sqs_client = boto3.client('sqs');
@@ -158,3 +118,44 @@ def list_buckets():
 # create_s3_bucket(bucket_name)
 # upload_to_s3('test.txt', bucket_name)
 # upload_to_s3('test2.txt', bucket_name)
+
+
+# client = boto3.client('secretsmanager', region_name='eu-west-2')
+
+
+# def credentials_storer(secret_identifier, userId, password, client=client):
+#     response = client.create_secret(
+#         Name=secret_identifier,
+#         SecretString='''{
+#     "username":"userId",
+#     "password":"password"
+# }'''
+#     )
+#     print(response['Name'])
+
+
+# def list_all_secrets():
+#     response = client.list_secrets()
+#     print(len(response['SecretList']), "secret(s) available")
+#     for i in response['SecretList']:
+#         print(i['Name'])
+
+
+# def secret_retriever(secret_identifier):
+#     secret_name = secret_identifier
+#     try:
+#         get_secret_value_response = client.get_secret_value(
+#             SecretId=secret_name
+#         )
+#     except ClientError as e:
+#         raise e
+
+#     secret = get_secret_value_response['SecretString']
+#     return secret
+
+
+# def secret_delete(secret_identifier):
+#     client.delete_secret(
+#         SecretId=secret_identifier,
+#         ForceDeleteWithoutRecovery=True
+#     )
