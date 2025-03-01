@@ -50,12 +50,16 @@ def send_message_to_sqs(url: str, message: str, client = sqs_client):
         return None
 
 
-def receive_messages_from_sqs(url : str, client = sqs_client) -> list:
-    response = client.receive_message(QueueUrl=url)
+def receive_messages_from_sqs(url: str, client=sqs_client, max_messages=10) -> list:
+    response = client.receive_message(
+        QueueUrl=url,
+        MaxNumberOfMessages=max_messages,
+        # WaitTimeSeconds=5  # Wait time to ensure messages are available
+    )
     if "Messages" in response:
         return response["Messages"]
     else:
-        raise Exception("No messages found in the queue")
+        return []
 
 
 s3_client = boto3.client('s3', region_name='eu-west-2')

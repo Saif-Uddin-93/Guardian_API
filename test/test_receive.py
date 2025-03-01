@@ -28,11 +28,8 @@ def test_receive_multiple_messages_from_sqs(sqs_client):
     messages = ["Message 1", "Message 2", "Message 3"]
     for message in messages:
         send_message_to_sqs(queue_url, message, sqs_client)
-        print(message)
     queue_messages = receive_messages_from_sqs(queue_url, sqs_client)
     received_messages = [msg["Body"] for msg in queue_messages]
-    print(received_messages)
-    print(messages)
     assert all(msg in received_messages for msg in messages)
 
 
