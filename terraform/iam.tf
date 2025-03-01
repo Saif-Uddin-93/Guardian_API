@@ -1,11 +1,9 @@
-resource "aws_iam_role" "sqs_lambda_role" {
-  name_prefix        = "role-${var.extract_lambda}"
-  assume_role_policy = data.aws_iam_policy_document.trust_policy.json
-}
+# ---------------
+# Lambda IAM Role
+# ---------------
 
-
-
-data "aws_iam_policy_document" "sqs_actions_policy" {
+# Define
+data "aws_iam_policy_document" "sqs_policy_document" {
   statement {
     # sid    = "sqs_actions"
     effect = "Allow"
@@ -20,10 +18,10 @@ data "aws_iam_policy_document" "sqs_actions_policy" {
   }
 }
 
-
-resource "aws_iam_policy" "extract_secrets_manager_policy" {
-  name_prefix = "sqs-policy-send-receive-"
-  policy      = data.aws_iam_policy_document.sqs_actions_policy.json
+# Create
+resource "aws_iam_policy" "sqs_policy" {
+  name_prefix = "sqs-policy-"
+  policy      = data.aws_iam_policy_document.sqs_policy_document.json
 }
 
 # Attach

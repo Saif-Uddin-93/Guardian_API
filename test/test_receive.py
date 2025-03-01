@@ -20,3 +20,24 @@ def test_receive_json_from_sqs(sqs_client):
     send_message_to_sqs(url = queue_url, message = json_response, client = sqs_client)
     queue_messages = receive_messages_from_sqs(queue_url, sqs_client)
     assert queue_messages[0]["Body"] == json_response
+
+
+def test_receive_multiple_messages_from_sqs(sqs_client):
+    queue = create_sqs_queue(queue_name="TestMultiple", client=sqs_client)
+    queue_url = queue["QueueUrl"]
+    messages = ["Message 1", "Message 2", "Message 3"]
+    for message in messages:
+        send_message_to_sqs(queue_url, message, sqs_client)
+        print(message)
+    queue_messages = receive_messages_from_sqs(queue_url, sqs_client)
+    received_messages = [msg["Body"] for msg in queue_messages]
+    print(received_messages)
+    print(messages)
+    assert all(msg in received_messages for msg in messages)
+
+
+def test_receive_no_messages_from_sqs(sqs_client):
+    queue = create_sqs_queue(queue_name="TestEmpty", client=sqs_client)
+    queue_url = queue["QueueUrl"]
+    queue_messages = receive_messages_from_sqs(queue_url, sqs_client)
+    assert len(queue_messages) == 0
