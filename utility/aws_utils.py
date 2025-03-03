@@ -1,5 +1,4 @@
-import boto3
-import os
+import boto3, os, json
 from botocore.exceptions import ClientError, BotoCoreError
 from dotenv import load_dotenv
 
@@ -145,6 +144,16 @@ def upload_to_s3(file_name, bucket_name, object_name=None):
 
 s3 = boto3.resource('s3')
 my_bucket = s3.Bucket(bucket_name)
+
+
+def write_to_s3(client, data, bucket, key):
+    """Helper to write material to S3."""
+    body = json.dumps(data)
+    try:
+        client.put_object(Bucket=bucket, Key=key, Body=body)
+        return True
+    except ClientError as c:
+        return False
 
 
 def view_bucket_contents(my_bucket=my_bucket)->list:
