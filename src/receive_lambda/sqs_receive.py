@@ -25,7 +25,7 @@ def receive(queue_name: str) -> dict | None:
         queue_name (str): The name of the queue as a string.
 
     Returns:
-        list: Returns the messages in the queue as a list of messages (str)
+        dict: Returns the messages in the queue as a dictionary of messages (str)
     """
     queue = create_sqs_queue(queue_name)
     queue_url : str = queue["QueueUrl"]

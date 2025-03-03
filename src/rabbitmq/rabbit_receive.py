@@ -10,6 +10,11 @@ rabbit_pass = os.getenv("rabbit-pass")
 rabbit_host = os.getenv("rabbit-host")
 
 def main() -> None:
+    """
+    Main function to set up RabbitMQ connection and start consuming messages.
+
+    This function sets up the RabbitMQ connection, declares the queue, and starts consuming messages from the queue.
+    """
     credentials = pika.PlainCredentials(rabbit_user, rabbit_pass)
     connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbit_host, port=5672, virtual_host='/', credentials=credentials))
     channel = connection.channel()
@@ -18,6 +23,15 @@ def main() -> None:
     })
 
     def callback(ch, method, properties, body):
+        """
+        Callback function to handle messages received from the queue.
+
+        Args:
+            ch: The channel object.
+            method: The method frame.
+            properties: The properties.
+            body: The message body.
+        """
         json_body = json.loads(body)
         print(f" [x] Received json")
         output_to_json_file(json_body)

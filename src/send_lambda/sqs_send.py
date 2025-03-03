@@ -20,11 +20,15 @@ def lambda_handler(event: dict, context: Any):
 
 
 def send(queue_name: str, message: str) -> None:
-    """testing
+    """
+    Send a message to an SQS queue.
 
     Args:
-        queue_name (str): _description_
-        message (str): _description_
+        queue_name (str): The name of the SQS queue.
+        message (str): The message to send to the SQS queue.
+
+    Returns:
+        None
     """
     queue = create_sqs_queue(queue_name)
     queue_url : str = queue["QueueUrl"]
