@@ -9,6 +9,7 @@ rabbit_user = os.getenv("rabbit-user")
 rabbit_pass = os.getenv("rabbit-pass")
 rabbit_host = os.getenv("rabbit-host")
 
+
 def main() -> None:
     """
     Main function to set up RabbitMQ connection and start consuming messages.
@@ -16,11 +17,19 @@ def main() -> None:
     This function sets up the RabbitMQ connection, declares the queue, and starts consuming messages from the queue.
     """
     credentials = pika.PlainCredentials(rabbit_user, rabbit_pass)
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbit_host, port=5672, virtual_host='/', credentials=credentials))
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(
+            host=rabbit_host, port=5672, virtual_host="/", credentials=credentials
+        )
+    )
     channel = connection.channel()
-    channel.queue_declare(queue='queue', durable=True, arguments = {
-        "x-message-ttl": 259200000,  # TTL in milliseconds (3 days)
-    })
+    channel.queue_declare(
+        queue="queue",
+        durable=True,
+        arguments={
+            "x-message-ttl": 259200000,  # TTL in milliseconds (3 days)
+        },
+    )
 
     def callback(ch, method, properties, body):
         """
@@ -36,16 +45,17 @@ def main() -> None:
         print(f" [x] Received json")
         output_to_json_file(json_body)
 
-    channel.basic_consume(queue='queue', on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(queue="queue", on_message_callback=callback, auto_ack=True)
 
-    print(' [*] Waiting for messages. To exit press CTRL+C')
+    print(" [*] Waiting for messages. To exit press CTRL+C")
     channel.start_consuming()
 
-if __name__ == '__main__':
-    try: 
+
+if __name__ == "__main__":
+    try:
         main()
     except KeyboardInterrupt:
-        print('\nInterrupted')
+        print("\nInterrupted")
         try:
             sys.exit(0)
         except SystemExit:

@@ -16,6 +16,7 @@ def lambda_handler(event: dict, context: Any):
     """
     send(event["queue"], event["message"])
 
+
 # call lamba_handler from UI with seleected queries
 
 
@@ -31,5 +32,5 @@ def send(queue_name: str, message: str) -> None:
         None
     """
     queue = create_sqs_queue(queue_name)
-    queue_url : str = queue["QueueUrl"]
+    queue_url: str = queue["QueueUrl"]
     send_message_to_sqs(queue_url, message)

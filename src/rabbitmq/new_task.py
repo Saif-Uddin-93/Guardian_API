@@ -11,14 +11,16 @@ rabbit_host = os.getenv("rabbit-host")
 # Set up RabbitMQ connection credentials
 credentials = pika.PlainCredentials(rabbit_user, rabbit_pass)
 # Establish a connection to RabbitMQ server
-connection = pika.BlockingConnection(pika.ConnectionParameters(host=rabbit_host, port=5672, virtual_host='/', credentials=credentials))
+connection = pika.BlockingConnection(
+    pika.ConnectionParameters(
+        host=rabbit_host, port=5672, virtual_host="/", credentials=credentials
+    )
+)
 channel = connection.channel()
 
 # Create a message from command line arguments or use a default message
-message = ' '.join(sys.argv[1:]) or "Hello World!"
+message = " ".join(sys.argv[1:]) or "Hello World!"
 # Publish the message to the queue
-channel.basic_publish(exchange='',
-                      routing_key='queue',
-                      body=message)
+channel.basic_publish(exchange="", routing_key="queue", body=message)
 # Print a confirmation message
 print(f" [x] Sent {message}")
