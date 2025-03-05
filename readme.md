@@ -2,15 +2,20 @@
 
 ## Description
 
-tool to use in conjunction with AWS to query the Guardian's API and retrieve article information as a JSON to be stored in AWS SQS, ready to be consumed by other applications on AWS.
+A tool to use in conjunction with AWS to query the Guardian's API and retrieve article information as a JSON to be stored in AWS SQS, ready to be consumed by other applications on AWS.
 
 [Link to deployed web page.](https://github.com/Saif-Uddin-93/Guardian_API)
 
 ## User Story
 
-```md
+<div style = "
+font-family:monospace;
+padding:0.5rem;
+background-color:#f6f8fa;
+color:#1f2328;
+border-radius:0.1rem">
 AS A coding tutor, I WANT to search relevant articles by Guardian to keep me up to date with the latest in the software space.
-```
+</div>
 
 ## Table of Contents
 
