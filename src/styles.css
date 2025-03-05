@@ -14,7 +14,7 @@ h1 {
 }
 
 .container {
-    max-width: 600px;
+    max-width: fit-content;
     margin: 0 auto;
 }
 
