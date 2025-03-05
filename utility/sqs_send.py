@@ -1,6 +1,6 @@
 # import json, os, boto3
 from typing import Any
-from api_handler.api_utils import fetch_api, build_api_url
+from utility.api_utils import fetch_api, build_api_url
 from utility.aws_utils import create_sqs_queue, send_message_to_sqs, sqs_client
 
 
@@ -14,7 +14,9 @@ def lambda_handler(event: dict, context: Any):
     :param event: The event data passed to the Lambda function (as a dictionary).
     :param context: The runtime information of the Lambda function (e.g., function name, version).
     """
-    # send(event["queue"], event["message"])
+    queue_name = "1"
+    message = "2"
+    send(queue_name, message)
 
 
 # call lamba_handler from UI with seleected queries
@@ -31,6 +33,8 @@ def send(queue_name: str, message: str) -> None:
     Returns:
         None
     """
+    if type(queue_name) != str or type(message) != str:
+        raise TypeError("inputs must be a string")
     queue = create_sqs_queue(queue_name)
     queue_url: str = queue["QueueUrl"]
     send_message_to_sqs(queue_url, message)

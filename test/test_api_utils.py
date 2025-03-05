@@ -1,4 +1,4 @@
-from api_handler.api_utils import *
+from utility.api_utils import *
 from dotenv import load_dotenv
 import pytest
 import os

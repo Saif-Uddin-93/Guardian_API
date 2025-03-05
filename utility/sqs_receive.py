@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import json, sys
 from typing import Any
-from api_handler.api_utils import get_guardian_data
+from utility.api_utils import get_guardian_data
 from utility.aws_utils import (
     create_sqs_queue,
     receive_messages_from_sqs,
