@@ -73,8 +73,8 @@ def get_guardian_data(
         url = build_api_url(search_term, options)
     response = fetch_api(url=url)
     if not save_to:
-        currentCount = s3_client
-        s3_client.write_to_s3(response, "guardian_data.json")
+        # currentCount = s3_client
+        # s3_client.write_to_s3(response, "guardian_data.json")
         return response
     elif save_to == "local":
         output_to_json_file(response)
