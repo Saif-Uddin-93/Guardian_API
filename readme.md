@@ -25,9 +25,14 @@ AS A coding tutor, I WANT to search relevant articles by Guardian to keep me up 
 
 ## Installation
 
-```md
-in the command line at the root of the project, run "make requirements" (support to run make commands is required)
-```
+<div style = "
+font-family:monospace;
+padding:0.5rem;
+background-color:#f6f8fa;
+color:#1f2328;
+border-radius:0.1rem">
+In the command line at the root of the project, run "make requirements" (support to run make commands is required)
+</div>
 
 ## Usage
 
