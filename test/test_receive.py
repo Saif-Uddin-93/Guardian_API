@@ -4,7 +4,7 @@ from utility.aws_utils import (
     send_message_to_sqs,
     receive_messages_from_sqs,
 )
-from api_handler.api_utils import get_guardian_data
+from utility.api_utils import get_guardian_data
 
 
 def test_recieve_messages_from_sqs(sqs_client):
