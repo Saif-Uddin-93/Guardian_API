@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import json
+import json, sys
 from typing import Any
 from api_handler.api_utils import get_guardian_data
 from utility.aws_utils import (
@@ -31,7 +31,8 @@ def lambda_handler(event: dict, context: Any):
     #     logger.info("There was a problem. Quotes not written.")
     # except Exception as e:
     #     logger.info(f"Unexpected Exception: {str(e)}")
-    receive()
+    queue = " ".join(sys.argv[1:]) or "queue"
+    receive(queue)
 
 
 def receive(queue_name: str) -> dict | None:

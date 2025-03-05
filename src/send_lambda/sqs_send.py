@@ -14,7 +14,7 @@ def lambda_handler(event: dict, context: Any):
     :param event: The event data passed to the Lambda function (as a dictionary).
     :param context: The runtime information of the Lambda function (e.g., function name, version).
     """
-    send(event["queue"], event["message"])
+    # send(event["queue"], event["message"])
 
 
 # call lamba_handler from UI with seleected queries
