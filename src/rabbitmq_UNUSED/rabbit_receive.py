@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import pika, sys, os, json
-from api_handler.api_utils import output_to_json_file
+from utility.api_utils import output_to_json_file
 from dotenv import load_dotenv
 
 load_dotenv()

@@ -1,7 +1,7 @@
 import pika, json, os
 
 import pika.delivery_mode
-from api_handler.api_utils import fetch_api, build_api_url
+from utility.api_utils import fetch_api, build_api_url
 from dotenv import load_dotenv
 
 load_dotenv()
