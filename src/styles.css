@@ -55,4 +55,10 @@ button {
     border: none;
     cursor: pointer;
     border-radius: 0.2rem;
+    &:hover {
+        background-color: #555;
+        &:active {
+            background-color: #777;
+        }
+    }
 }
