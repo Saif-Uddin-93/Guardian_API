@@ -29,11 +29,7 @@ def sqs_client(aws_credentials):
 @pytest.fixture()
 def s3_data_buckets(s3_client):
     s3_client.create_bucket(
-        Bucket="test-ingested-bucket",
-        CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
-    )
-    s3_client.create_bucket(
-        Bucket="test-processed-bucket",
+        Bucket="test-bucket",
         CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
     )
     return s3_client
