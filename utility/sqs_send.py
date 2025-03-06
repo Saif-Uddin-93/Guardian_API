@@ -4,22 +4,22 @@ from utility.api_utils import fetch_api, build_api_url
 from utility.aws_utils import create_sqs_queue, send_message_to_sqs, sqs_client
 
 
-def lambda_handler(event: dict, context: Any):
-    """
-    AWS Lambda function entry point.
+# def lambda_handler(event: dict, context: Any):
+#     """
+#     AWS Lambda function entry point.
 
-    This function is triggered by an event and context, extracts data from a database,
-    and stores the data in an S3 bucket. The bucket name is retrieved from environment variables.
+#     This function is triggered by an event and context, extracts data from a database,
+#     and stores the data in an S3 bucket. The bucket name is retrieved from environment variables.
 
-    :param event: The event data passed to the Lambda function (as a dictionary).
-    :param context: The runtime information of the Lambda function (e.g., function name, version).
-    """
-    queue_name = "1"
-    message = "2"
-    send(queue_name, message)
+#     :param event: The event data passed to the Lambda function (as a dictionary).
+#     :param context: The runtime information of the Lambda function (e.g., function name, version).
+#     """
+#     queue_name = "1"
+#     message = "2"
+#     send(queue_name, message)
 
 
-# call lamba_handler from UI with seleected queries
+# # call lamba_handler from UI with seleected queries
 
 
 def send(queue_name: str, message: str) -> None:
