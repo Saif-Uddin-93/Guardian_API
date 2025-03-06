@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guardian API</title>
     <link rel="stylesheet" href="./src/styles.css">
-    <!-- <script src="scripts.js" defer></script> -->
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous" defer></script>
+    <script src="./src/script.js" defer></script>
 </head>
 <body>
     <div class="container">
         <h1>Guardian API</h1>
-        <form id="searchForm">
-            <label for="searchTerm">Enter Search Term:</label>
-            <input type="text" id="searchTerm" name="searchTerm" required>
+        <form id="search-form">
+            <label for="search-term">Enter Search Term:</label>
+            <input type="text" id="search-term" name="search-term" required>
             <div class="filters">
                 <h2>Filters <span>(optional)</span></h2>
                 <div>
-                    <label for="filter1">Date From:</label>
+                    <label for="date-from">Date From:</label>
                     <input type="date" id="date-from" name="date-from">
                 </div>
                 <div>
-                    <label for="date-from">Date To:</label>
+                    <label for="date-to">Date To:</label>
                     <input type="date" id="date-to" name="date-to">
                 </div>
                 <div>
@@ -34,7 +35,7 @@
                     <input type="range" id="rating" name="page-size" min="1" max="5">
                 </div>
             </div>
-            <button type="submit">Search</button>
+            <button type="button" id="search-button">Search</button>
         </form>
     </div>
 </body>
