@@ -18,3 +18,7 @@ ratingCheckbox.on("click", function(){
         $("#rating").prop("disabled", true);
     }
 })
+
+/*
+call lambda as api gateway.
+*/
