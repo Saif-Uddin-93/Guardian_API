@@ -2,7 +2,7 @@ import pytest, boto3, os
 from moto import mock_aws
 
 
-# mock aws credentialss
+# mock aws credentials
 @pytest.fixture()
 def aws_credentials():
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
@@ -33,6 +33,12 @@ def s3_data_buckets(s3_client):
         CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
     )
     return s3_client
+
+
+@pytest.fixture()
+def apigw_client(aws_credentials):
+    with mock_aws():
+        yield boto3.client("apigateway", region_name="eu-west-2")
 
 
 @pytest.fixture()
