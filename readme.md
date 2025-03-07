@@ -4,7 +4,7 @@
 
 A tool to use in conjunction with AWS to query the Guardian's API and retrieve article information as a JSON to be stored in AWS SQS, ready to be consumed by other applications on AWS.
 
-[Link to deployed web page.](https://github.com/Saif-Uddin-93/Guardian_API)
+[Link to deployed web page.](https://saif-uddin-93.github.io/Guardian_API/)
 
 ## User Story
 
