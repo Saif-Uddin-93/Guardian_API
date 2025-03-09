@@ -24,7 +24,7 @@ def test_api_url_formatted_correctly_with_options_included():
     result = build_api_url(term=search_term, opt=opts)
     assert (
         result
-        == f"https://content.guardianapis.com/search?q=tech&show-blocks=body&from-date=2020-01-01&page-size=1&api-key={os.getenv('test-key')}"
+        == f"https://content.guardianapis.com/search?q=tech&show-blocks=body&from-date=2020-01-01&page-size=1&api-key={os.getenv('test-key') or 'test'}"
     )
 
 
@@ -86,7 +86,7 @@ def test_api_url_with_multiple_options():
     result = build_api_url(term=search_term, opt=opts)
     assert (
         result
-        == f"https://content.guardianapis.com/search?q=tech&show-blocks=body&from-date=2020-01-01&to-date=2020-12-31&page-size=5&api-key={os.getenv('test-key')}"
+        == f"https://content.guardianapis.com/search?q=tech&show-blocks=body&from-date=2020-01-01&to-date=2020-12-31&page-size=5&api-key={os.getenv('test-key') or 'test'}"
     )
 
 

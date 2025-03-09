@@ -26,6 +26,7 @@ def sqs_client(aws_credentials):
         yield boto3.client("sqs")
 
 
+# mock s3 client
 @pytest.fixture()
 def s3_data_buckets(s3_client):
     s3_client.create_bucket(
@@ -35,10 +36,11 @@ def s3_data_buckets(s3_client):
     return s3_client
 
 
+# mock api gateway client
 @pytest.fixture()
 def apigw_client(aws_credentials):
     with mock_aws():
-        yield boto3.client("apigateway", region_name="eu-west-2")
+        yield boto3.client("apigatewayv2")
 
 
 @pytest.fixture()

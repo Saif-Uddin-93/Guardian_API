@@ -105,7 +105,7 @@ def receive_messages_from_sqs(url: str, client=sqs_client, max_messages=10) -> l
 
 
 s3_client = boto3.client('s3', region_name='eu-west-2')
-bucket_name = os.environ.get('s3_bucket')
+bucket_name = os.environ.get('s3_bucket') or "test-bucket"
 
 
 def create_s3_bucket(bucket_name, region='eu-west-2'):

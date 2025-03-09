@@ -21,7 +21,7 @@ def build_api_url(term: str = "tech", opt: list = []) -> str:
     filters = "&".join(["=".join(arg) for arg in opt])
     if filters:
         filters += "&"
-    return f"https://content.guardianapis.com/search?q={term}&show-blocks=body&{filters}api-key={os.getenv('test-key')}"
+    return f"https://content.guardianapis.com/search?q={term}&show-blocks=body&{filters}api-key={os.getenv('test-key') or 'test'}"
 
 
 def fetch_api(url: str) -> json:
