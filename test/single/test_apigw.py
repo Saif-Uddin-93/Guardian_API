@@ -18,12 +18,11 @@ import pytest
 #     assert "Target" not in resp
 
 
-
-@pytest.mark.xfail
+# @pytest.mark.xfail
 def test_create_route_minimal(apigw_client):
     # Define the API ID and other details
-    api_id = 'your-api-id'
-    route_key = 'GET /items'
+    api_id = apigw_client.create_api(Name="test-api", ProtocolType="HTTP")["ApiId"]
+    route_key = 'GET /'
     target = 'integrations/your-integration-id'
 
     # Define the route request parameters
@@ -42,4 +41,4 @@ def test_create_route_minimal(apigw_client):
 
     # Print the response
     print(response)
-    assert False
+    assert response["ApiKeyRequired"] is False
