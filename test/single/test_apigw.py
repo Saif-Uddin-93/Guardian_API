@@ -1,4 +1,4 @@
-import pytest
+import json
 
 # def test_create_route_minimal(apigw_client):
 #     api_id = apigw_client.create_api(Name="test-api", ProtocolType="HTTP")["ApiId"]
@@ -18,27 +18,22 @@ import pytest
 #     assert "Target" not in resp
 
 
-# @pytest.mark.xfail
-def test_create_route_minimal(apigw_client):
-    # Define the API ID and other details
-    api_id = apigw_client.create_api(Name="test-api", ProtocolType="HTTP")["ApiId"]
-    route_key = 'GET /'
-    target = 'integrations/your-integration-id'
-
-    # Define the route request parameters
-    route_request_parameters = {
-        'param1': {'Required': True},
-        'param2': {'Required': False}
-    }
-
-    # Create the route with request parameters
-    response = apigw_client.create_route(
+def test_api_gateway_query_params(apigw_client):
+    client, api_id = apigw_client
+    
+    # Send a test request using boto3 to the mock API Gateway
+    response = client.test_invoke_method(
         ApiId=api_id,
-        RouteKey=route_key,
-        Target=target,
-        RequestParameters=route_request_parameters
+        ResourceId='test',
+        HttpMethod='GET',
+        QueryStringParameters={
+            'name': 'John'
+        }
     )
 
-    # Print the response
-    print(response)
-    assert response["ApiKeyRequired"] is False
+    # Decode and check the response
+    body = json.loads(response['Body'])
+    
+    assert response['StatusCode'] == 200
+    assert body['message'] == 'Hello, John!'
+    assert body['query_params'] == {'name': 'John'}

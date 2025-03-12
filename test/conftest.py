@@ -15,20 +15,20 @@ def aws_credentials():
 # mock s3 client
 @pytest.fixture()
 def s3_client(aws_credentials):
-    with mock_aws(aws_credentials):
+    with mock_aws():
         yield boto3.client("s3")
 
 
 # mock sqs client
 @pytest.fixture()
 def sqs_client(aws_credentials):
-    with mock_aws(aws_credentials):
+    with mock_aws():
         yield boto3.client("sqs")
 
 
-# mock s3 client
+# mock s3 client with bucket
 @pytest.fixture()
-def s3_data_buckets(s3_client):
+def s3_buckets(s3_client):
     s3_client.create_bucket(
         Bucket="test-bucket",
         CreateBucketConfiguration={"LocationConstraint": "eu-west-2"},
@@ -37,10 +37,37 @@ def s3_data_buckets(s3_client):
 
 
 # mock api gateway client
-@pytest.fixture()
+@pytest.fixture
 def apigw_client(aws_credentials):
     with mock_aws():
-        yield boto3.client("apigatewayv2")
+        client = boto3.client('apigatewayv2')
+        
+        response = client.create_api(
+            Name='TestAPI',
+            ProtocolType='HTTP'
+        )
+        api_id = response['ApiId']
+        
+        route_request_parameters = {
+            'name': {'Required': True},
+            'param2': {'Required': False}
+        }
+
+        client.create_route(
+            ApiId=api_id,
+            RouteKey='GET /test',
+            # Target=target,
+            RequestParameters=route_request_parameters
+        )
+        
+        # Create an integration (mocked)
+        client.create_integration(
+            ApiId=api_id,
+            IntegrationType='MOCK',
+            IntegrationUri='lambda'
+        )
+
+        yield client, api_id
 
 
 @pytest.fixture()
