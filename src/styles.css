@@ -98,7 +98,7 @@ button {
     border-radius: 0.2rem;
     &:hover {
         background-color: #555;
-        &:active {
+        &:focus {
             background-color: #777;
         }
     }

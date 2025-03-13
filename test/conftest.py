@@ -60,11 +60,19 @@ def apigw_client(aws_credentials):
             RequestParameters=route_request_parameters
         )
         
-        # Create an integration (mocked)
         client.create_integration(
             ApiId=api_id,
             IntegrationType='MOCK',
             IntegrationUri='lambda'
+        )
+
+        client.create_usage_plan(
+            name='Daily',
+            description='50 calls per day',
+            quota={
+                'limit': 50,
+                'period': 'DAY'
+            }
         )
 
         yield client, api_id
