@@ -34,13 +34,16 @@
                     <span>Enable</span>
                     <input type="range" id="rating" name="page-size" min="1" max="5" step="1" disabled>
                 </div>
+                <div>
+                    <label for="aws-api">Enter AWS API URI here:</label>
+                    <input type="text" name="aws-api" id="aws-api" required>
+                </div>
             </div>
             <button type="submit" id="search-button" class="mb-5vh">Search</button>
         </form>
         <section id="results" class="mb-5vh">
             <h2>Results</h2>
             <div id="results-list" class="mb-5vh">
-                <!-- Results will be displayed here -->
                  <ul>
                     <li>example result</li>
                  </ul>
