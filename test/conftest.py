@@ -36,9 +36,9 @@ def s3_buckets(s3_client):
     return s3_client
 
 
-# mock api gateway client
-@pytest.fixture
-def apigw_client(aws_credentials):
+# mock api gateway v2 client
+@pytest.fixture()
+def apigwv2_client(aws_credentials):
     with mock_aws():
         client = boto3.client('apigatewayv2')
         
@@ -66,12 +66,56 @@ def apigw_client(aws_credentials):
             IntegrationUri='lambda'
         )
 
+        yield client, api_id
+
+
+# mock apigateway client v1
+@pytest.fixture()
+def apigw_client(aws_credentials):
+    with mock_aws():
+        client = boto3.client('apigateway', region_name='eu-west-2')
+        
+        # Create a REST API
+        response = client.create_rest_api(
+            name='TestAPI',
+            description='Example REST API',
+            endpointConfiguration={
+                'types': ['REGIONAL']
+            }
+        )
+        api_id = response['id']
+
+        # Get root resource ID
+        resources = client.get_resources(restApiId=api_id)
+        root_id = resources['items'][0]['id']
+
         client.create_usage_plan(
             name='Daily',
-            description='50 calls per day',
+            description='50 api calls per day',
             quota={
                 'limit': 50,
                 'period': 'DAY'
+            }
+        )
+
+        client.put_method(
+            restApiId=api_id,
+            resourceId=root_id,
+            httpMethod='GET',
+            authorizationType='NONE',
+            requestParameters={
+                'method.request.querystring.name': True,
+                'method.request.querystring.param2': False
+            }
+        )
+        
+        client.put_integration(
+            restApiId=api_id,
+            resourceId=root_id,
+            httpMethod='GET',
+            type='MOCK',
+            requestTemplates={
+                'application/json': '{"statusCode": 200}'
             }
         )
 

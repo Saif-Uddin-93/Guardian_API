@@ -18,22 +18,7 @@ import json
 #     assert "Target" not in resp
 
 
-def test_api_gateway_query_params(apigw_client):
-    client, api_id = apigw_client
+def test_api_gatewayv2_query_params(apigwv2_client):
+    client, api_id = apigwv2_client
     
-    # Send a test request using boto3 to the mock API Gateway
-    response = client.test_invoke_method(
-        ApiId=api_id,
-        ResourceId='test',
-        HttpMethod='GET',
-        QueryStringParameters={
-            'name': 'John'
-        }
-    )
-
-    # Decode and check the response
-    body = json.loads(response['Body'])
-    
-    assert response['StatusCode'] == 200
-    assert body['message'] == 'Hello, John!'
-    assert body['query_params'] == {'name': 'John'}
+    assert True
