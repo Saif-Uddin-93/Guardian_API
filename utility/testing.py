@@ -1,7 +1,7 @@
 import boto3
 
-# Initialize the API Gateway V2 client
-api_client = boto3.client('apigatewayv2')
+# Initialize the API Gateway client
+api_client = boto3.client('apigateway')
 
 # Define the API ID and other details
 api_id = 'your-api-id'

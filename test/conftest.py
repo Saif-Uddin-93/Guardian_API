@@ -74,50 +74,65 @@ def apigwv2_client(aws_credentials):
 def apigw_client(aws_credentials):
     with mock_aws():
         client = boto3.client('apigateway', region_name='eu-west-2')
+
+        api_name = 'guardianAPI'
+        api_id
+        response
+
+        def api_exists(name):
+            response = client.get_rest_apis()
+            for item in response['items']:
+                if item['name'] == name:
+                    return True
+            return False
         
-        # Create a REST API
-        response = client.create_rest_api(
-            name='TestAPI',
-            description='Example REST API',
-            endpointConfiguration={
-                'types': ['REGIONAL']
-            }
-        )
-        api_id = response['id']
+        if not api_exists(api_name):
 
-        # Get root resource ID
-        resources = client.get_resources(restApiId=api_id)
-        root_id = resources['items'][0]['id']
+            response = client.create_rest_api(
+                name = api_name,
+                description = 'Example REST API',
+                endpointConfiguration = {
+                    'types': ['REGIONAL']
+                }
+            )
+            api_id = response['id']
 
-        client.create_usage_plan(
-            name='Daily',
-            description='50 api calls per day',
-            quota={
-                'limit': 50,
-                'period': 'DAY'
-            }
-        )
+            resources = client.get_resources(restApiId=api_id)
+            root_id = resources['items'][0]['id']
 
-        client.put_method(
-            restApiId=api_id,
-            resourceId=root_id,
-            httpMethod='GET',
-            authorizationType='NONE',
-            requestParameters={
-                'method.request.querystring.name': True,
-                'method.request.querystring.param2': False
-            }
-        )
-        
-        client.put_integration(
-            restApiId=api_id,
-            resourceId=root_id,
-            httpMethod='GET',
-            type='MOCK',
-            requestTemplates={
-                'application/json': '{"statusCode": 200}'
-            }
-        )
+            client.create_usage_plan(
+                name='Daily',
+                description='50 api calls per day',
+                quota={
+                    'limit': 50,
+                    'period': 'DAY'
+                }
+            )
+
+            client.put_method(
+                restApiId=api_id,
+                resourceId=root_id,
+                httpMethod='GET',
+                authorizationType='NONE',
+                requestParameters={
+                    'method.request.querystring.name': True,
+                    'method.request.querystring.param2': False
+                }
+            )
+            
+            client.put_integration(
+                restApiId=api_id,
+                resourceId=root_id,
+                httpMethod='GET',
+                type='MOCK',
+                requestTemplates={
+                    'application/json': '{"statusCode": 200}'
+                }
+            )
+        else:
+            for item in response['items']:
+                if item['name'] == api_name:
+                    api_id = item['id']
 
         yield client, api_id
 
