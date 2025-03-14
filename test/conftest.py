@@ -76,8 +76,8 @@ def apigw_client(aws_credentials):
         client = boto3.client('apigateway', region_name='eu-west-2')
 
         api_name = 'guardianAPI'
-        api_id
-        response
+        api_id = None
+        response = None
 
         def api_exists(name):
             response = client.get_rest_apis()

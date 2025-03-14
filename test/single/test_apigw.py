@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_api_gatewayv2_query_params(apigwv2_client):
-    client, api_id = apigwv2_client
+def test_api_gateway_creation(apigw_client):
+    client, api_id = apigw_client
     
-    assert True
+    assert client.get_rest_api(restApiId=api_id)['name'] == 'guardianAPI'
