@@ -230,27 +230,101 @@ def list_buckets():
     for i in range(len(response['Buckets'])):
         print("Bucket:", response['Buckets'][i]['Name'])
 
-# Initialize the API Gateway V2 client
-api_client = boto3.client('apigatewayv2')
 
-# Define the API ID and other details
-api_id = 'your-api-id'
-route_key = 'GET /items'
-target = 'integrations/your-integration-id'
+def apigwv2_client():
+    client = boto3.client('apigatewayv2')
+    
+    response = client.create_api(
+        Name='TestAPI',
+        ProtocolType='HTTP'
+    )
+    api_id = response['ApiId']
+    
+    route_request_parameters = {
+        'name': {'Required': True},
+        'param2': {'Required': False}
+    }
 
-# Define the route request parameters
-route_request_parameters = {
-    'param1': {'Required': True},
-    'param2': {'Required': False}
-}
+    client.create_route(
+        ApiId=api_id,
+        RouteKey='GET /test',
+        # Target=target,
+        RequestParameters=route_request_parameters
+    )
+    
+    client.create_integration(
+        ApiId=api_id,
+        IntegrationType='MOCK',
+        IntegrationUri='lambda'
+    )
 
-# # Create the route with request parameters
-# response = api_client.create_route(
-#     ApiId=api_id,
-#     RouteKey=route_key,
-#     Target=target,
-#     RequestParameters=route_request_parameters
-# )
+    yield client, api_id
 
-# # Print the response
-# print(response)
+
+# apigateway client v1
+api_client = boto3.client('apigateway', region_name='eu-west-2')
+
+def apigw_client():
+
+    api_name = 'guardianAPI'
+    api_id = None
+    response = None
+
+    def api_exists(name):
+        response = api_client.get_rest_apis()
+        for item in response['items']:
+            if item['name'] == name:
+                return True
+        return False
+    
+    if not api_exists(api_name):
+
+        response = api_client.create_rest_api(
+            name = api_name,
+            description = 'REST API to retrieve guardian data',
+            endpointConfiguration = {
+                'types': ['REGIONAL']
+            }
+        )
+        api_id = response['id']
+
+        resources = api_client.get_resources(restApiId=api_id)
+        root_id = resources['items'][0]['id']
+
+        api_client.create_usage_plan(
+            name='Daily',
+            description='50 api calls per day',
+            quota={
+                'limit': 50,
+                'period': 'DAY'
+            }
+        )
+
+        api_client.put_method(
+            restApiId=api_id,
+            resourceId=root_id,
+            httpMethod='GET',
+            authorizationType='NONE',
+            requestParameters={
+                'method.request.querystring.name': True,
+                'method.request.querystring.param2': False
+            }
+        )
+        
+        api_client.put_integration(
+            restApiId=api_id,
+            resourceId=root_id,
+            httpMethod='GET',
+            type='MOCK',
+            requestTemplates={
+                'application/json': '{"statusCode": 200}'
+            }
+        )
+    else:
+        for item in response['items']:
+            if item['name'] == api_name:
+                api_id = item['id']
+
+    api_client.create_deployment(restApiId=api_id, stageName='test')
+
+    yield api_client, api_id
