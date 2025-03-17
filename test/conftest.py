@@ -69,6 +69,13 @@ def apigwv2_client(aws_credentials):
         yield client, api_id
 
 
+# mock lambda client
+@pytest.fixture()
+def lambda_client(aws_credentials):
+    with mock_aws():
+        yield boto3.client('lambda')
+
+
 # mock apigateway client v1
 @pytest.fixture()
 def apigw_client(aws_credentials):
