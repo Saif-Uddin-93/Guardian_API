@@ -1,8 +1,5 @@
 import boto3
 from botocore.exceptions import ClientError, BotoCoreError
-from dotenv import load_dotenv
-
-load_dotenv()
 
 region_name = "eu-west-2"
 
