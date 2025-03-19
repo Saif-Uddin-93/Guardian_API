@@ -1,4 +1,4 @@
-import pytest, json
+import pytest
 from botocore.exceptions import ClientError
 from utility.aws_utils import create_sqs_queue, send_message_to_sqs
 
