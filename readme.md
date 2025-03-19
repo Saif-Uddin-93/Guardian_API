@@ -1,8 +1,8 @@
 README STILL IN PROGRESS
 - Instructions still need to be completed
+- video guide on entire process
 
-
-
+<br><br><br>
 
 # Guardian-API
 
