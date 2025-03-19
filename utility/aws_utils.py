@@ -157,6 +157,7 @@ def apigw_client(integration_type='HTTP'):
         mapping_template = """
 #set($allParams = $input.params())
 {
+  "status" : "200",
   "body-json" : $input.json('$'),
   "params" : {
     #foreach($type in $allParams.keySet())

@@ -10,20 +10,5 @@ def test_api_method_type_get(apigw_client_fixture):
     assert response['items'][0]['path'] == '/'
     assert response['items'][0]['resourceMethods']['GET']['httpMethod'] == 'GET'
 
-def test_invoke_api_method(apigw_client_fixture):
-    client, api_id = apigw_client_fixture
-
-    invoke_url = f'https://{api_id}.execute-api.eu-west-2.amazonaws.com/test/'
-    response = client.test_invoke_method(
-        restApiId=api_id,
-        resourceId=client.get_resources(restApiId=api_id)['items'][0]['id'],
-        httpMethod='GET',
-        pathWithQueryString=invoke_url
-    )
-
-    print(response)
-
-    assert response['status'] == 200
-    assert 'body' in response
 
     

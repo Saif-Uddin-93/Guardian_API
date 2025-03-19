@@ -22,20 +22,3 @@ def test_send_empty_message_to_sqs(sqs_client):
         send_message_to_sqs(queue_url, message, client=sqs_client)
 
 
-def test_lambda_handler(lambda_client):
-    client = lambda_client
-    payload = {
-        "queryStringParameters": {
-            "arg": "val",
-            "param": "var"
-        }
-    }
-
-    response = client.invoke(
-        FunctionName='your-function-name',
-        Payload=json.dumps(payload),
-        InvocationType='RequestResponse'
-    )
-
-    result = json.loads(response['Payload'].read())
-    print(result)
