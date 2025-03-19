@@ -1,5 +1,5 @@
-import pytest
-from botocore.exceptions import ClientError, BotoCoreError
+import pytest, json
+from botocore.exceptions import ClientError
 from utility.aws_utils import create_sqs_queue, send_message_to_sqs
 
 
@@ -22,18 +22,20 @@ def test_send_empty_message_to_sqs(sqs_client):
         send_message_to_sqs(queue_url, message, client=sqs_client)
 
 
-# def test_send_message_to_nonexistent_queue(sqs_client):
-#     queue_url = "https://sqs.us-east-1.amazonaws.com/123456789012/NonExistentQueue"
-#     message = "Test message."
+def test_lambda_handler(lambda_client):
+    client = lambda_client
+    payload = {
+        "queryStringParameters": {
+            "arg": "val",
+            "param": "var"
+        }
+    }
 
-#     with pytest.raises(ClientError):
-#         send_message_to_sqs(queue_url, message, client=sqs_client)
+    response = client.invoke(
+        FunctionName='your-function-name',
+        Payload=json.dumps(payload),
+        InvocationType='RequestResponse'
+    )
 
-
-# def test_send_message_to_sqs_with_invalid_client():
-#     queue_url = "https://sqs.us-east-1.amazonaws.com/123456789012/Test"
-#     message = "Test message."
-#     invalid_client = boto3.client("s3")  # Using S3 client instead of SQS client
-
-#     with pytest.raises(BotoCoreError):
-#         send_message_to_sqs(queue_url, message, client=invalid_client)
+    result = json.loads(response['Payload'].read())
+    print(result)
