@@ -1,6 +1,5 @@
 import json, os, requests
 from dotenv import load_dotenv
-from utility.aws_utils import s3_client
 
 load_dotenv()
 
@@ -53,7 +52,7 @@ def output_to_json_file(jsn: json, file_path: str = "./default.json") -> None:
 
 
 def get_guardian_data(
-    search_term: str, options: list = None, save_to: str | None = None
+    search_term: str, options: list = []
 ) -> None:
     """
     Fetch data from The Guardian API and optionally save it to a file.
@@ -61,22 +60,10 @@ def get_guardian_data(
     Args:
         search_term (str): The search term to query.
         options (list): A list of additional query parameters as lists of key value pairs. Defaults to None.
-        save_to (str | None): The file path to save the JSON data to. If None, the data is not saved. Defaults to None.
 
     Returns:
         None
     """
-    url: str
-    if not options:
-        url = build_api_url(search_term)
-    else:
-        url = build_api_url(search_term, options)
+    url = build_api_url(search_term, options)
     response = fetch_api(url=url)
-    if not save_to:
-        # currentCount = s3_client
-        # s3_client.write_to_s3(response, "guardian_data.json")
-        return response
-    elif save_to == "local":
-        output_to_json_file(response)
-    else:
-        output_to_json_file(response, save_to)
+    return response
