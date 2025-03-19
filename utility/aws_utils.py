@@ -104,9 +104,9 @@ def receive_messages_from_sqs(url: str, client=sqs_client, max_messages=10) -> l
 # apigateway client v1
 api_client = boto3.client('apigateway', region_name='eu-west-2')
 
-def apigw_client():
+def apigw_client(integration_type='HTTP'):
 
-    api_name = 'guardianAPI'
+    api_name = 'guardian-api'
     api_id = None
     response = None
 
@@ -203,7 +203,7 @@ def apigw_client():
             restApiId=api_id,
             resourceId=root_id,
             httpMethod='GET',
-            type='HTTP',
+            type=integration_type,
             requestTemplates={
                 'application/json': mapping_template
             }
@@ -213,9 +213,9 @@ def apigw_client():
             if item['name'] == api_name:
                 api_id = item['id']
 
-    api_client.create_deployment(restApiId=api_id, stageName='test')
+    api_client.create_deployment(restApiId=api_id, stageName='dev')
 
-    yield api_client, api_id
+    return api_client, api_id
 
 # lambda client
 lambda_client = boto3.client('lambda')
