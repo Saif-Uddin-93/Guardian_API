@@ -1,9 +1,4 @@
-import json, os, requests
-from dotenv import load_dotenv
-
-load_dotenv()
-
-api_keywords = []
+import json, requests
 
 
 def build_api_url(term: str = "tech", opt: list = []) -> str:
@@ -20,7 +15,7 @@ def build_api_url(term: str = "tech", opt: list = []) -> str:
     filters = "&".join(["=".join(arg) for arg in opt])
     if filters:
         filters += "&"
-    return f"https://content.guardianapis.com/search?q={term}&show-blocks=body&{filters}api-key={os.getenv('test-key') or 'test'}"
+    return f"https://content.guardianapis.com/search?q={term}&show-blocks=body&{filters}api-key={'test'}"
 
 
 def fetch_api(url: str) -> json:
@@ -36,24 +31,9 @@ def fetch_api(url: str) -> json:
     return requests.get(url).json()
 
 
-def output_to_json_file(jsn: json, file_path: str = "./default.json") -> None:
-    """
-    Output JSON data to a file.
-
-    Args:
-        jsn (json): The JSON data to write to the file.
-        file_path (str): The file path to write the JSON data to. Defaults to './default.json'.
-
-    Returns:
-        None
-    """
-    with open(file_path, "w") as f:
-        json.dump(jsn, f, indent=4)
-
-
 def get_guardian_data(
     search_term: str, options: list = []
-) -> None:
+):
     """
     Fetch data from The Guardian API and optionally save it to a file.
 
