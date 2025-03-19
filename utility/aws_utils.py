@@ -217,6 +217,33 @@ def apigw_client():
 
     yield api_client, api_id
 
+# lambda client
+lambda_client = boto3.client('lambda')
+
+def create_lambda(client):
+    with open('requests_layer.zip', 'rb') as f:
+        requests_code = f.read()
+    
+    with open('utility_layer.zip', 'rb') as f:
+        utility_code = f.read()
+
+    # Create requests layer
+    client.publish_layer_version(
+        LayerName='requests',
+        Description='Layer containing requests module',
+        Content={
+            'ZipFile': requests_code
+        }
+    )
+    # Create utility layer
+    client.publish_layer_version(
+        LayerName='utility',
+        Description='Layer containing utility module',
+        Content={
+            'ZipFile': utility_code
+        }
+    )
+
 # s3_client = boto3.client('s3', region_name='eu-west-2')
 # bucket_name = os.environ.get('s3_bucket') or "test-bucket"
 

@@ -1,17 +1,12 @@
 #!/usr/bin/env python
-import json, sys
-from typing import Any
-from utility.api_utils import get_guardian_data
+import json
 from utility.aws_utils import (
     create_sqs_queue,
     receive_messages_from_sqs,
-    sqs_client,
-    s3_client,
 )
-from datetime import datetime as dt
 
 
-def lambda_handler(event: dict, context: Any):
+def lambda_handler(event: dict, context):
     """
     AWS Lambda function entry point.
 

@@ -1,25 +1,22 @@
 import json
-from typing import Any
-from utility.api_utils import fetch_api, build_api_url
-from utility.aws_utils import create_sqs_queue, send_message_to_sqs, sqs_client
-
+from utility.api_utils import get_guardian_data
+from utility.aws_utils import create_sqs_queue, send_message_to_sqs
 
 # call lambda_handler from UI with selected queries
-def lambda_handler(event: dict, context: Any):
-    """
-    AWS Lambda function entry point.
+def lambda_handler(event, context):
+    # Get query string parameters directly from event
+    params = event['params']['querystring']
+    query = params['query']
+    queue_name = params['queue-name']
+    opts = [[opt, params[opt]] for opt in params]
+    data = get_guardian_data(query, opts)
+    
+    send(queue_name, json.dumps(data))
 
-    This function is triggered by an event and context, extracts data from a database,
-    and stores the data in an S3 bucket. The bucket name is retrieved from environment variables.
-
-    :param event: The event data passed to the Lambda function (as a dictionary).
-    :param context: The runtime information of the Lambda function (e.g., function name, version).
-    """
-    query_params = event.get('queryStringParameters', {})
-    name = query_params.get('name', 'unknown')
     return {
-        "statusCode": 200,
-        "body": json.dumps({"message": f"Hello, {name}!"})
+        'statusCode': 200,
+        'opts': json.dumps(opts),
+        'guardian': data
     }
 
 
@@ -39,3 +36,4 @@ def send(queue_name: str, message: str) -> None:
     queue = create_sqs_queue(queue_name)
     queue_url: str = queue["QueueUrl"]
     send_message_to_sqs(queue_url, message)
+
