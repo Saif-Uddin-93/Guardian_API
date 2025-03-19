@@ -4,7 +4,7 @@ from botocore.exceptions import ClientError, BotoCoreError
 region_name = "eu-west-2"
 
 # sqs client
-sqs_client = boto3.client('sqs')
+sqs_client = boto3.client('sqs', region_name=region_name)
 
 def create_sqs_queue(queue_name: str, client=sqs_client):
     """
@@ -102,11 +102,13 @@ def receive_messages_from_sqs(url: str, client=sqs_client, max_messages=10) -> l
 
 
 # apigateway client v1
-api_client = boto3.client('apigateway', region_name='eu-west-2')
+api_client = boto3.client('apigateway', region_name=region_name)
 
-def apigw_client(integration_type='HTTP'):
+def create_api(api_name='guardian-api'):
+    apigw_client(api_name=api_name)
 
-    api_name = 'guardian-api'
+def apigw_client(integration_type='HTTP', api_name='guardian-api'):
+
     api_id = None
     response = None
 
@@ -219,7 +221,7 @@ def apigw_client(integration_type='HTTP'):
     return api_client, api_id
 
 # lambda client
-lambda_client = boto3.client('lambda')
+lambda_client = boto3.client('lambda', region_name=region_name)
 
 def create_lambda(client):
     with open('requests_layer.zip', 'rb') as f:
