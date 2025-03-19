@@ -1,7 +1,39 @@
 import boto3
 from botocore.exceptions import ClientError, BotoCoreError
+from string import Template
 
 region_name = "eu-west-2"
+
+iam_client = boto3.client('iam', region_name=region_name)   
+
+def create_iam_role (role: str):
+    roleName = f'{role}-role'
+    policyDoc= Template("""{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "$role.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}""").substitute({
+        "role": role
+    })
+    iam_client.create_role(
+        RoleName=roleName,
+        AssumeRolePolicyDocument=policyDoc
+    )
+    role_id = iam_client.get_role(RoleName=roleName)['Role']['RoleId']
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    iam_client.attach_role_policy(
+        RoleName=roleName,
+        PolicyArn=policy_arn
+    )
+
+    return role_id
 
 # sqs client
 sqs_client = boto3.client('sqs', region_name=region_name)
@@ -220,17 +252,47 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
 
     return api_client, api_id
 
+
 # lambda client
 lambda_client = boto3.client('lambda', region_name=region_name)
 
 def create_lambda(client):
+    # Create functions
+    with open('sqs_send.zip', 'rb') as f:
+        sqs_send_code = f.read()
+
+    with open('sqs_receive.zip', 'rb') as f:
+        sqs_receive_code = f.read()
+    
+    client.create_function(
+        FunctionName='sqs_send',
+        Runtime='python3.13',
+        Role='arn:aws:iam::123456789012:role/lambda-role',
+        Handler='sqs_send.lambda_handler',
+        Code={
+            'ZipFile': sqs_send_code
+        },
+        Description='Send a message to an SQS queue'
+    )
+
+    client.create_function(
+        FunctionName='sqs_receive',
+        Runtime='python3.13',
+        Role='arn:aws:iam::123456789012:role/lambda-role',
+        Handler='sqs_receive.lambda_handler',
+        Code={
+            'ZipFile': sqs_receive_code
+        },
+        Description='Receive messages from an SQS queue'
+    )
+
+    # Create layers
     with open('requests_layer.zip', 'rb') as f:
         requests_code = f.read()
     
     with open('utility_layer.zip', 'rb') as f:
         utility_code = f.read()
 
-    # Create requests layer
     client.publish_layer_version(
         LayerName='requests',
         Description='Layer containing requests module',
@@ -238,7 +300,7 @@ def create_lambda(client):
             'ZipFile': requests_code
         }
     )
-    # Create utility layer
+    
     client.publish_layer_version(
         LayerName='utility',
         Description='Layer containing utility module',
