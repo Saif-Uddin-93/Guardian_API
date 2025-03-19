@@ -175,3 +175,4 @@ cython_debug/
 
 pypy.py
 python
+utility/unused_aws_utils.py
