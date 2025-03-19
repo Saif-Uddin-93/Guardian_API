@@ -20,39 +20,6 @@ def sqs_client(aws_credentials):
         yield boto3.client("sqs")
 
 
-# mock api gateway v2 client
-@pytest.fixture()
-def apigwv2_client(aws_credentials):
-    with mock_aws():
-        client = boto3.client('apigatewayv2')
-        
-        response = client.create_api(
-            Name='TestAPI',
-            ProtocolType='HTTP'
-        )
-        api_id = response['ApiId']
-        
-        route_request_parameters = {
-            'name': {'Required': True},
-            'param2': {'Required': False}
-        }
-
-        client.create_route(
-            ApiId=api_id,
-            RouteKey='GET /test',
-            # Target=target,
-            RequestParameters=route_request_parameters
-        )
-        
-        client.create_integration(
-            ApiId=api_id,
-            IntegrationType='MOCK',
-            IntegrationUri='lambda'
-        )
-
-        yield client, api_id
-
-
 # mock lambda client
 @pytest.fixture()
 def lambda_client(aws_credentials):
@@ -70,7 +37,40 @@ def apigw_client_fixture(aws_credentials):
         yield client, api_id
 
 
-@pytest.fixture()
-def secretsmanager_client(aws_credentials):
-    with mock_aws():
-        yield boto3.client("secretsmanager")
+# # mock api gateway v2 client
+# @pytest.fixture()
+# def apigwv2_client(aws_credentials):
+#     with mock_aws():
+#         client = boto3.client('apigatewayv2')
+        
+#         response = client.create_api(
+#             Name='TestAPI',
+#             ProtocolType='HTTP'
+#         )
+#         api_id = response['ApiId']
+        
+#         route_request_parameters = {
+#             'name': {'Required': True},
+#             'param2': {'Required': False}
+#         }
+
+#         client.create_route(
+#             ApiId=api_id,
+#             RouteKey='GET /test',
+#             # Target=target,
+#             RequestParameters=route_request_parameters
+#         )
+        
+#         client.create_integration(
+#             ApiId=api_id,
+#             IntegrationType='MOCK',
+#             IntegrationUri='lambda'
+#         )
+
+#         yield client, api_id
+
+
+# @pytest.fixture()
+# def secretsmanager_client(aws_credentials):
+#     with mock_aws():
+#         yield boto3.client("secretsmanager")
