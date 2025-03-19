@@ -18,7 +18,7 @@ def create_sqs_queue(queue_name: str, client=sqs_client):
         dict: The response from the create_queue call.
     """
     return client.create_queue(
-        QueueName=queue_name,
+        QueueName=f"{queue_name}.fifo",
         Attributes={
             'DelaySeconds': '0',
             'MessageRetentionPeriod': '259200000'  # 3 days
@@ -148,7 +148,7 @@ def apigw_client(integration_type='HTTP'):
             requestParameters={
                 'method.request.querystring.query': True,
                 'method.request.querystring.queue-name': True,
-                'method.request.querystring.date-from': False,
+                'method.request.querystring.from-date': False,
                 'method.request.querystring.page-size': False,
                 'method.request.querystring.star-rating': False,
             }
