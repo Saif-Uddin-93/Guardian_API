@@ -1,17 +1,23 @@
 import json
+from botocore.exceptions import (
+    ClientError,
+)
 from utility.api_utils import get_guardian_data
-from utility.aws_utils import create_sqs_queue, send_message_to_sqs
+from utility.aws_utils import (
+    create_sqs_queue,
+    send_message_to_sqs,
+    sqs_client
+)
 
 # call lambda_handler from UI with selected queries
-def lambda_handler(event, context):
-    # Get query string parameters directly from event
+def lambda_handler(event: dict, context):
     params = event['params']['querystring']
     query = params['query']
     queue_name = params['queue-name']
     opts = [[opt, params[opt]] for opt in params]
-    data = get_guardian_data(query, opts)
+    data = json.dumps(get_guardian_data(query, opts))
     
-    send(queue_name, json.dumps(data))
+    send(queue_name, data)
 
     return {
         'statusCode': 200,
@@ -32,7 +38,29 @@ def send(queue_name: str, message: str) -> None:
     """
     if type(queue_name) != str or type(message) != str:
         raise TypeError("inputs must be a string")
-    queue = create_sqs_queue(queue_name)
-    queue_url: str = queue["QueueUrl"]
+    def check_queue_exists(queue_name: str) -> bool:
+        """Check if the SQS queue exists.
+
+        Parameters:
+            queue_name (str): The name of the queue as a string.
+
+        Returns:
+            bool: True if the queue exists, False otherwise.
+        """
+        try:
+            sqs_client.get_queue_url(QueueName=queue_name)
+            return True
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'AWS.SimpleQueueService.NonExistentQueue':
+                return False
+            else:
+                raise e
+
+    if not check_queue_exists(queue_name):
+        queue = create_sqs_queue(queue_name)
+        queue_url: str = queue["QueueUrl"]
+    else:
+        queue_url: str = sqs_client.get_queue_url(QueueName=queue_name)
+        
     send_message_to_sqs(queue_url, message)
 

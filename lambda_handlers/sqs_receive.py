@@ -1,8 +1,8 @@
-#!/usr/bin/env python
 import json
+from botocore.exceptions import ClientError
 from utility.aws_utils import (
-    create_sqs_queue,
     receive_messages_from_sqs,
+    sqs_client
 )
 
 
@@ -29,7 +29,28 @@ def receive(queue_name: str) -> dict | None:
     Returns:
         dict: Returns the messages in the queue as a dictionary of messages (str)
     """
-    queue = create_sqs_queue(queue_name)
-    queue_url: str = queue["QueueUrl"]
-    response: dict = json.loads(receive_messages_from_sqs(queue_url))
+    def check_queue_exists(queue_name: str) -> bool:
+        """Check if the SQS queue exists.
+
+        Parameters:
+            queue_name (str): The name of the queue as a string.
+
+        Returns:
+            bool: True if the queue exists, False otherwise.
+        """
+        try:
+            sqs_client.get_queue_url(QueueName=queue_name)
+            return True
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'AWS.SimpleQueueService.NonExistentQueue':
+                return False
+            else:
+                raise e
+
+    if not check_queue_exists(queue_name):
+        raise ValueError("Queue does not exist.")
+    else:
+        queue_url: str = sqs_client.get_queue_url(QueueName=queue_name)
+    
+    response = json.loads(receive_messages_from_sqs(queue_url))
     return response
