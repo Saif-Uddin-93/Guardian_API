@@ -39,6 +39,13 @@ def create_iam_role(client=iam_client):
     })
 
     try:
+        # Check if the role already exists
+        try:
+            existing_role = client.get_role(RoleName=role_name)
+            print(f"Role {role_name} already exists.")
+            return existing_role['Role']['RoleId'], existing_role['Role']['Arn']
+        except client.exceptions.NoSuchEntityException:
+            print(f"Role {role_name} does not exist. Creating a new role.")
         role_response = client.create_role(
             RoleName=role_name,
             AssumeRolePolicyDocument=trust_policy_doc
