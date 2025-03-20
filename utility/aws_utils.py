@@ -3,11 +3,29 @@ from botocore.exceptions import ClientError, BotoCoreError
 
 region_name = "eu-west-2"
 
-current_session = boto3.Session(region_name=region_name)
+current_session = boto3.Session()
+sts_client = current_session.client('sts')
+aws_account_id = '841162707768'
+role_name = 'guardian-iam-role'
+
+
+assumed_role_object = sts_client.assume_role(
+    RoleArn=f'arn:aws:iam::{aws_account_id}:role/{role_name}',
+    RoleSessionName=f'{role_name}-Session'
+)
+assumed_role_credentials = assumed_role_object['Credentials']
+
+ASSUMED_ROLE_SESSON = boto3.Session(
+    aws_access_key_id=assumed_role_credentials['AccessKeyId'],
+    aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
+    aws_session_token=assumed_role_credentials['SessionToken'],
+    region_name=region_name
+)
+
 
 iam_client = boto3.client('iam', region_name=region_name)   
 
-def create_iam_role(client=iam_client):
+def create_iam_role(role_name: str=role_name, client=iam_client):
     """
     Create an IAM role with the specified client.
 
@@ -17,7 +35,6 @@ def create_iam_role(client=iam_client):
     Returns:
         tuple: The Role ID and Role ARN of the created IAM role.
     """
-    role_name = 'guardian-iam-role'
 
     policies = [
         'arn:aws:iam::aws:policy/AWSLambda_FullAccess',
