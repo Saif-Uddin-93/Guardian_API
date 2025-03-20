@@ -5,38 +5,89 @@ region_name = "eu-west-2"
 
 iam_client = boto3.client('iam', region_name=region_name)   
 
-def create_iam_role (role: str):
-    roleName = f'{role}-role'
-    policy_doc = json.dumps({
+def create_iam_role(client=iam_client):
+    """
+    Create an IAM role with the specified client.
+
+    Parameters:
+        client (boto3.client): The IAM client to use for creating the role.
+
+    Returns:
+        tuple: The Role ID and Role ARN of the created IAM role.
+    """
+    role_name = 'guardian-iam-role'
+
+    # policies = [
+    #     'arn:aws:iam::aws:policy/AWSLambda_FullAccess',
+    #     'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator',
+    #     'arn:aws:iam::aws:policy/AmazonSQSFullAccess'
+    # ]
+
+    trust_policy_doc = json.dumps({
         "Version": "2012-10-17",
         "Statement": [
             {
                 "Effect": "Allow",
                 "Principal": {
-                    "Service": role+".amazonaws.com"
+                    "Service": [
+                        "lambda.amazonaws.com"
+                    ]
                 },
                 "Action": "sts:AssumeRole"
             }
         ]
     })
-    
-    role_response = iam_client.create_role(
-        RoleName = roleName,
-        AssumeRolePolicyDoc_dment = policy_doc
-    )
 
-    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-    
-    iam_client.attach_role_policy(
-        RoleName = roleName,
-        PolicyArn = policy_arn
-    )
+    try:
+        role_response = client.create_role(
+            RoleName=role_name,
+            AssumeRolePolicyDocument=trust_policy_doc
+        )
 
-    role_arn = role_response['Role']['Arn']
+        permissions_policy_doc = json.dumps({
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "lambda:*",
+                        "sqs:*",
+                        "apigateway:*"
+                    ],
+                    "Resource": "*"
+                }
+            ]
+        })
 
-    role_id = iam_client.get_role(RoleName = roleName)['Role']['RoleId']
+        # Create and attach the permissions policy
+        policy_response = client.create_policy(
+            PolicyName=f'{role_name}-policy',
+            PolicyDocument=permissions_policy_doc
+        )
 
-    return role_id, role_arn
+        policy_arn = policy_response['Policy']['Arn']
+
+        client.attach_role_policy(
+            RoleName=role_name,
+            PolicyArn=policy_arn
+        )
+
+        role_arn = role_response['Role']['Arn']
+        role_id = client.get_role(RoleName=role_name)['Role']['RoleId']
+
+        return role_id, role_arn
+
+    except ClientError as e:
+        print(f"ClientError: {e.response['Error']['Message']}")
+        return None, None
+
+    except BotoCoreError as e:
+        print(f"BotoCoreError: {str(e)}")
+        return None, None
+
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return None, None
 
 # sqs client
 sqs_client = boto3.client('sqs', region_name=region_name)
@@ -259,7 +310,7 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
 # lambda client
 lambda_client = boto3.client('lambda', region_name=region_name)
 
-def create_lambda(client):
+def create_lambda(role_id:str, role_arn:str, client = lambda_client):
     # Create functions
     with open('sqs_send.zip', 'rb') as f:
         sqs_send_code = f.read()
@@ -270,7 +321,7 @@ def create_lambda(client):
     client.create_function(
         FunctionName='sqs_send',
         Runtime='python3.13',
-        Role='arn:aws:iam::123456789012:role/lambda-role',
+        Role=role_arn,
         Handler='sqs_send.lambda_handler',
         Code={
             'ZipFile': sqs_send_code
@@ -281,7 +332,7 @@ def create_lambda(client):
     client.create_function(
         FunctionName='sqs_receive',
         Runtime='python3.13',
-        Role='arn:aws:iam::123456789012:role/lambda-role',
+        Role=role_arn,
         Handler='sqs_receive.lambda_handler',
         Code={
             'ZipFile': sqs_receive_code
