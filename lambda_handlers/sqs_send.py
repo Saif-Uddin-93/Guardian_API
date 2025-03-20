@@ -1,7 +1,5 @@
 import json
-from botocore.exceptions import (
-    ClientError,
-)
+from botocore.exceptions import ClientError
 from utility.api_utils import get_guardian_data
 from utility.aws_utils import (
     create_sqs_queue,
