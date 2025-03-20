@@ -2,6 +2,7 @@ import json
 from botocore.exceptions import ClientError
 from utility.aws_utils import (
     receive_messages_from_sqs,
+    create_iam_role,
     sqs_client
 )
 
@@ -16,7 +17,7 @@ def lambda_handler(event: dict, context):
     :param event: The event data passed to the Lambda function (as a dictionary).
     :param context: The runtime information of the Lambda function (e.g., function name, version).
     """
-
+    create_iam_role()
     receive(event["queue_name"])
 
 

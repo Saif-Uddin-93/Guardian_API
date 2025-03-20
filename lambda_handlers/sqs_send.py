@@ -3,6 +3,7 @@ from botocore.exceptions import ClientError
 from utility.api_utils import get_guardian_data
 from utility.aws_utils import (
     create_sqs_queue,
+    create_iam_role,
     send_message_to_sqs,
     sqs_client
 )
@@ -13,9 +14,10 @@ def lambda_handler(event: dict, context):
     query = params['query']
     queue_name = params['queue-name']
     opts = [[opt, params[opt]] for opt in params]
-    data = json.dumps(get_guardian_data(query, opts))
+    data = get_guardian_data(query, opts)
     
-    send(queue_name, data)
+    create_iam_role()
+    send(queue_name, json.dumps(data))
 
     return {
         'statusCode': 200,
@@ -34,8 +36,6 @@ def send(queue_name: str, message: str) -> None:
     Returns:
         None
     """
-    if type(queue_name) != str or type(message) != str:
-        raise TypeError("inputs must be a string")
     def check_queue_exists(queue_name: str) -> bool:
         """Check if the SQS queue exists.
 
