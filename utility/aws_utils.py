@@ -107,7 +107,7 @@ def create_sqs_queue(queue_name: str, client=sqs_client):
         QueueName=f"{queue_name}.fifo",
         Attributes={
             'DelaySeconds': '0',
-            'MessageRetentionPeriod': '259200000'  # 3 days
+            'MessageRetentionPeriod': '259200'  # 3 days
         }
     )
 
