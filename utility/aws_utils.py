@@ -3,6 +3,8 @@ from botocore.exceptions import ClientError, BotoCoreError
 
 region_name = "eu-west-2"
 
+current_session = boto3.Session(region_name=region_name)
+
 iam_client = boto3.client('iam', region_name=region_name)   
 
 def create_iam_role(client=iam_client):
@@ -61,7 +63,9 @@ def create_iam_role(client=iam_client):
                         "sqs:*",
                         "sqs:CreateQueue",
                         "sqs:GetQueueAttributes",
-                        "apigateway:*"
+                        "apigateway:*",
+                        "logs:CreateLogStream",
+                        "logs:PutLogEvents"
                     ],
                     "Resource": "*"
                 }
