@@ -17,11 +17,11 @@ def create_iam_role(client=iam_client):
     """
     role_name = 'guardian-iam-role'
 
-    # policies = [
-    #     'arn:aws:iam::aws:policy/AWSLambda_FullAccess',
-    #     'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator',
-    #     'arn:aws:iam::aws:policy/AmazonSQSFullAccess'
-    # ]
+    policies = [
+        'arn:aws:iam::aws:policy/AWSLambda_FullAccess',
+        'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator',
+        'arn:aws:iam::aws:policy/AmazonSQSFullAccess'
+    ]
 
     trust_policy_doc = json.dumps({
         "Version": "2012-10-17",
@@ -59,6 +59,8 @@ def create_iam_role(client=iam_client):
                     "Action": [
                         "lambda:*",
                         "sqs:*",
+                        "sqs:CreateQueue",
+                        "sqs:GetQueueAttributes",
                         "apigateway:*"
                     ],
                     "Resource": "*"
@@ -78,6 +80,12 @@ def create_iam_role(client=iam_client):
             RoleName=role_name,
             PolicyArn=policy_arn
         )
+
+        for policy in policies:
+            client.attach_role_policy(
+                RoleName=role_name,
+                PolicyArn=policy
+            )
 
         role_arn = role_response['Role']['Arn']
         role_id = client.get_role(RoleName=role_name)['Role']['RoleId']
