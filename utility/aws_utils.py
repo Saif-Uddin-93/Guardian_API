@@ -1,6 +1,5 @@
-import boto3
+import boto3, json
 from botocore.exceptions import ClientError, BotoCoreError
-from string import Template
 
 region_name = "eu-west-2"
 
@@ -8,32 +7,36 @@ iam_client = boto3.client('iam', region_name=region_name)
 
 def create_iam_role (role: str):
     roleName = f'{role}-role'
-    policyDoc= Template("""{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "$role.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        }
-    ]
-}""").substitute({
-        "role": role
+    policy_doc = json.dumps({
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": role+".amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+            }
+        ]
     })
-    iam_client.create_role(
-        RoleName=roleName,
-        AssumeRolePolicyDocument=policyDoc
-    )
-    role_id = iam_client.get_role(RoleName=roleName)['Role']['RoleId']
-    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-    iam_client.attach_role_policy(
-        RoleName=roleName,
-        PolicyArn=policy_arn
+    
+    role_response = iam_client.create_role(
+        RoleName = roleName,
+        AssumeRolePolicyDoc_dment = policy_doc
     )
 
-    return role_id
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    
+    iam_client.attach_role_policy(
+        RoleName = roleName,
+        PolicyArn = policy_arn
+    )
+
+    role_arn = role_response['Role']['Arn']
+
+    role_id = iam_client.get_role(RoleName = roleName)['Role']['RoleId']
+
+    return role_id, role_arn
 
 # sqs client
 sqs_client = boto3.client('sqs', region_name=region_name)
