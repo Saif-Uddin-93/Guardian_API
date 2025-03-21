@@ -1,0 +1,32 @@
+# terraform {
+#   required_providers {
+#     aws = {
+#       source  = "hashicorp/aws"
+#       version = "~> 5.0"
+#     }
+#   }
+#   backend "s3" {
+#     bucket = "launchpad-de-guardian-api-tfstate"
+#     key    = "terraform/terraform.tfstate"
+#     region = "eu-west-2"
+#   }
+# }
+
+provider "aws" {
+  region = "eu-west-2"
+  default_tags {
+    tags = {
+      ProjectName  = "Launchpad DE - Guardian API"
+      Team         = "Stray Tech"
+      TeamMembers  = "Saif Uddin"
+      DeployedFrom = "Terraform"
+      Repository   = "https://github.com/Saif-Uddin-93/Guardian_API"
+      CostCentre   = "DE"
+      Environment  = "dev"
+    }
+  }
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
