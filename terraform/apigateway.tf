@@ -30,11 +30,11 @@ resource "aws_api_gateway_method" "guardian_method" {
 }
 
 resource "aws_api_gateway_integration" "guardian_integration" {
-  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
-  resource_id = aws_api_gateway_resource.guardian_resource.id
-  http_method = aws_api_gateway_method.guardian_method.http_method
+  rest_api_id             = aws_api_gateway_rest_api.guardian_api.id
+  resource_id             = aws_api_gateway_resource.guardian_resource.id
+  http_method             = aws_api_gateway_method.guardian_method.http_method
   integration_http_method = "POST"
-  type        = "AWS"
+  type                    = "AWS"
 
   request_templates = {
     "application/json" = <<EOT
@@ -88,7 +88,23 @@ EOT
 resource "aws_api_gateway_deployment" "guardian_deployment" {
   depends_on  = [aws_api_gateway_integration.guardian_integration]
   rest_api_id = aws_api_gateway_rest_api.guardian_api.id
-  stage_name  = "dev"
+}
+
+resource "aws_api_gateway_stage" "api_stage" {
+  deployment_id = aws_api_gateway_deployment.guardian_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.guardian_api.id
+  stage_name    = "dev"
+}
+
+resource "aws_api_gateway_method_settings" "api_method_settings" {
+  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
+  stage_name  = aws_api_gateway_stage.api_stage.stage_name
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+  }
 }
 
 resource "aws_api_gateway_usage_plan" "guardian_usage_plan" {
