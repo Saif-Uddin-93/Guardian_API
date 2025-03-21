@@ -3,7 +3,6 @@ from botocore.exceptions import ClientError
 from utility.api_utils import get_guardian_data
 from utility.aws_utils import (
     create_sqs_queue,
-    create_iam_role,
     send_message_to_sqs,
     sqs_client
 )
@@ -16,7 +15,6 @@ def lambda_handler(event: dict, context):
     opts = [[opt, params[opt]] for opt in params]
     data = get_guardian_data(query, opts)
     
-    create_iam_role()
     send(queue_name, json.dumps(data))
 
     return {
