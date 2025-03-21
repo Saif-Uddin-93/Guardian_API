@@ -7,23 +7,26 @@ current_session = boto3.Session()
 sts_client = current_session.client('sts')
 aws_account_id = '841162707768'
 role_name = 'guardian-iam-role'
+role_arn=f'arn:aws:iam::{aws_account_id}:role/{role_name}'
 
+try:
+    assumed_role_object = sts_client.assume_role(
+        RoleArn=role_arn,
+        RoleSessionName=f'{role_name}-Session'
+    )
+    assumed_role_credentials = assumed_role_object['Credentials']
+except ClientError as e:
+    print(f"Error assuming role: {e.response['Error']['Message']}")
+    exit(1)
 
-assumed_role_object = sts_client.assume_role(
-    RoleArn=f'arn:aws:iam::{aws_account_id}:role/{role_name}',
-    RoleSessionName=f'{role_name}-Session'
-)
-assumed_role_credentials = assumed_role_object['Credentials']
-
-ASSUMED_ROLE_SESSON = boto3.Session(
+ASSUMED_ROLE_SESSION = boto3.Session(
     aws_access_key_id=assumed_role_credentials['AccessKeyId'],
     aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
     aws_session_token=assumed_role_credentials['SessionToken'],
     region_name=region_name
 )
 
-
-iam_client = boto3.client('iam', region_name=region_name)   
+iam_client = ASSUMED_ROLE_SESSION.client('iam', region_name=region_name)   
 
 def create_iam_role(role_name: str=role_name, client=iam_client):
     """
@@ -126,7 +129,7 @@ def create_iam_role(role_name: str=role_name, client=iam_client):
         return None, None
 
 # sqs client
-sqs_client = boto3.client('sqs', region_name=region_name)
+sqs_client = ASSUMED_ROLE_SESSION.client('sqs', region_name=region_name)
 
 def create_sqs_queue(queue_name: str, client=sqs_client):
     """
@@ -160,7 +163,7 @@ def send_message_to_sqs(url: str, message: str, client=sqs_client):
     Returns:
         str: The MessageId of the sent message if successful, None otherwise.
     """
-    if message == "":
+    if not message:
         error_response = {
                 'Error': {
                     'Code': 'message',
@@ -218,31 +221,31 @@ def receive_messages_from_sqs(url: str, client=sqs_client, max_messages=10) -> l
         # WaitTimeSeconds=5  # Wait time to ensure messages are available
     )
     if "Messages" in response:
-        return response["Messages"]
+        response.get("Messages", [])
     else:
         return []
 
 
 # apigateway client v1
-api_client = boto3.client('apigateway', region_name=region_name)
+api_client = ASSUMED_ROLE_SESSION.client('apigateway', region_name=region_name)
 
 def create_api(api_name='guardian-api'):
     apigw_client(api_name=api_name)
 
 def apigw_client(integration_type='HTTP', api_name='guardian-api'):
 
-    api_id = None
     response = None
 
     def api_exists(name):
         response = api_client.get_rest_apis()
         for item in response['items']:
             if item['name'] == name:
-                return True
-        return False
-    
-    if not api_exists(api_name):
+                return item['id']
+        return None
 
+    api_id = api_exists(api_name)
+
+    if not api_id:
         response = api_client.create_rest_api(
             name = api_name,
             description = 'REST API to retrieve guardian data',
@@ -333,20 +336,20 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
                 'application/json': mapping_template
             }
         )
-    else:
-        for item in response['items']:
-            if item['name'] == api_name:
-                api_id = item['id']
 
-    api_client.create_deployment(restApiId=api_id, stageName='dev')
+    try:
+        api_client.create_deployment(restApiId=api_id, stageName='dev')
+    except ClientError as e:
+        print(f"Error creating deployment: {e.response['Error']['Message']}")
+
 
     return api_client, api_id
 
 
 # lambda client
-lambda_client = boto3.client('lambda', region_name=region_name)
+lambda_client = ASSUMED_ROLE_SESSION.client('lambda', region_name=region_name)
 
-def create_lambda(role_id:str, role_arn:str, client = lambda_client):
+def create_lambda(role_arn:str=role_arn, client = lambda_client):
     # Create functions
     with open('sqs_send.zip', 'rb') as f:
         sqs_send_code = f.read()
