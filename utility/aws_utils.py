@@ -1,4 +1,4 @@
-import boto3, json
+import boto3, json, logging
 from botocore.exceptions import ClientError, BotoCoreError
 
 region_name = "eu-west-2"
@@ -25,6 +25,11 @@ ASSUMED_ROLE_SESSION = boto3.Session(
     aws_session_token=assumed_role_credentials['SessionToken'],
     region_name=region_name
 )
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+logger.info(f"LOGGING access key: {assumed_role_credentials['AccessKeyId']}")
 
 iam_client = ASSUMED_ROLE_SESSION.client('iam', region_name=region_name)   
 
