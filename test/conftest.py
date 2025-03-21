@@ -32,7 +32,6 @@ def lambda_client(aws_credentials):
 def apigw_client_fixture(aws_credentials):
     with mock_aws():
         response = apigw_client('MOCK')
-        print(response)
         client, api_id = response
         yield client, api_id
 
