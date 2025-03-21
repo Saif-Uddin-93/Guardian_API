@@ -1,32 +1,66 @@
-import boto3, json, re
+import boto3, json, re, time
 from botocore.exceptions import ClientError, BotoCoreError
 
 region_name = "eu-west-2"
-
-current_session = boto3.Session()
-sts_client = current_session.client('sts')
 aws_account_id = '841162707768'
 role_name = 'guardian-iam-role'
 role_arn=f'arn:aws:iam::{aws_account_id}:role/{role_name}'
 
-try:
-    assumed_role_object = sts_client.assume_role(
-        RoleArn=role_arn,
-        RoleSessionName=f'{role_name}-Session'
+def sts_assume_role():
+    current_session = boto3.Session()
+    sts_client = current_session.client('sts')
+
+    try:
+        assumed_role_object = sts_client.assume_role(
+            RoleArn=role_arn,
+            RoleSessionName=f'{role_name}-Session'
+        )
+        assumed_role_credentials = assumed_role_object['Credentials']
+    except ClientError as e:
+        print(f"Error assuming role: {e.response['Error']['Message']}")
+        exit(1)
+
+    return boto3.Session(
+        aws_access_key_id=assumed_role_credentials['AccessKeyId'],
+        aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
+        aws_session_token=assumed_role_credentials['SessionToken'],
+        region_name=region_name
     )
-    assumed_role_credentials = assumed_role_object['Credentials']
-except ClientError as e:
-    print(f"Error assuming role: {e.response['Error']['Message']}")
-    exit(1)
 
-ASSUMED_ROLE_SESSION = boto3.Session(
-    aws_access_key_id=assumed_role_credentials['AccessKeyId'],
-    aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
-    aws_session_token=assumed_role_credentials['SessionToken'],
-    region_name=region_name
-)
+assumed_role_session = sts_assume_role()
 
-iam_client = ASSUMED_ROLE_SESSION.client('iam', region_name=region_name)   
+# CloudWatch Logs client setup
+logs_client = assumed_role_session.client('logs', region_name=region_name)
+  # Your CloudWatch Log Group
+log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
+
+# Ensure log stream exists, if not, create one
+def create_log_stream(
+    log_group_name = '/aws/lambda/LambdaTest',
+    log_stream_name = 'sqs-creation-stream'
+):
+    try:
+        logs_client.create_log_stream(logGroupName=log_group_name, logStreamName=log_stream_name)
+    except logs_client.exceptions.ResourceAlreadyExistsException:
+        pass  # Log stream already exists
+
+# Function to log to CloudWatch Logs
+def log_to_cloudwatch(
+    message, 
+    log_group_name = '/aws/lambda/LambdaTest',
+    log_stream_name = 'sqs-creation-stream'
+):
+    timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
+    logs_client.put_log_events(
+        logGroupName=log_group_name,
+        logStreamName=log_stream_name,
+        logEvents=[{
+            'timestamp': timestamp,
+            'message': message
+        }]
+    )
+
+iam_client = assumed_role_session.client('iam', region_name=region_name)   
 
 def create_iam_role(role_name: str=role_name, client=iam_client):
     """
@@ -129,7 +163,7 @@ def create_iam_role(role_name: str=role_name, client=iam_client):
         return None, None
 
 # sqs client
-sqs_client = ASSUMED_ROLE_SESSION.client('sqs', region_name=region_name)
+sqs_client = assumed_role_session.client('sqs', region_name=region_name)
 
 def create_sqs_queue(queue_name: str, client=sqs_client):
     """
@@ -142,24 +176,45 @@ def create_sqs_queue(queue_name: str, client=sqs_client):
     Returns:
         dict: The response from the create_queue call.
     """
+    
+    # Strip any leading/trailing whitespaces from the queue_name
+    queue_name = queue_name.strip()
+    
     # Validate the queue name
     if not re.match(r'^[A-Za-z0-9_-]{1,80}$', queue_name):
-        raise ValueError("Queue name can only include alphanumeric characters, hyphens, or underscores, and must be between 1 and 80 characters.")
+        error_message = "Queue name can only include alphanumeric characters, hyphens, or underscores, and must be between 1 and 80 characters."
+        log_to_cloudwatch(error_message)  # Log to CloudWatch
+        raise ValueError(error_message)
     
     # Append the .fifo suffix
     queue_name_with_suffix = f"{queue_name}.fifo"
     
     # Check the total length after appending .fifo
     if len(queue_name_with_suffix) > 80:
-        raise ValueError("Queue name, including the '.fifo' suffix, must not exceed 80 characters.")
+        error_message = "Queue name, including the '.fifo' suffix, must not exceed 80 characters."
+        log_to_cloudwatch(error_message)  # Log to CloudWatch
+        raise ValueError(error_message)
     
-    return client.create_queue(
-        QueueName=queue_name_with_suffix,
-        Attributes={
-            'DelaySeconds': '0',
-            'MessageRetentionPeriod': '259200'  # 3 days
-        }
-    )
+    # Log the queue name being created to CloudWatch
+    log_message = f"Creating queue with name: {queue_name_with_suffix}"
+    log_to_cloudwatch(log_message)  # Log to CloudWatch
+    
+    # Proceed with creating the queue
+    try:
+        return client.create_queue(
+            QueueName=queue_name_with_suffix,
+            Attributes={
+                'DelaySeconds': '0',
+                'MessageRetentionPeriod': '259200'  # 3 days
+            }
+        )
+    except ClientError as e:
+        error_message = f"Error creating queue: {e.response['Error']['Message']}"
+        log_to_cloudwatch(error_message)  # Log to CloudWatch
+        raise
+
+# Ensure the log stream exists before starting to log
+create_log_stream()
 
 
 def send_message_to_sqs(url: str, message: str, client=sqs_client):
@@ -238,7 +293,7 @@ def receive_messages_from_sqs(url: str, client=sqs_client, max_messages=10) -> l
 
 
 # apigateway client v1
-api_client = ASSUMED_ROLE_SESSION.client('apigateway', region_name=region_name)
+api_client = assumed_role_session.client('apigateway', region_name=region_name)
 
 def create_api(api_name='guardian-api'):
     apigw_client(api_name=api_name)
@@ -358,7 +413,7 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
 
 
 # lambda client
-lambda_client = ASSUMED_ROLE_SESSION.client('lambda', region_name=region_name)
+lambda_client = assumed_role_session.client('lambda', region_name=region_name)
 
 def create_lambda(role_arn:str=role_arn, client = lambda_client):
     # Create functions
