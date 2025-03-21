@@ -2,6 +2,12 @@ provider "aws" {
   region = "eu-west-2"
 }
 
+data "aws_caller_identity" "current" {}
+
+locals {
+  account_id = data.aws_caller_identity.current.account_id
+}
+
 resource "aws_iam_role" "guardian_iam_role" {
   name = "guardian-iam-role"
 
@@ -11,7 +17,8 @@ resource "aws_iam_role" "guardian_iam_role" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "lambda.amazonaws.com"
+          Service = "lambda.amazonaws.com",
+          AWS = "arn:aws:sts::${local.account_id}:assumed-role/guardian-iam-role/LambdaTest"
         }
         Action = "sts:AssumeRole"
       }
@@ -56,6 +63,7 @@ resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
   role       = aws_iam_role.guardian_iam_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
 }
+
 
 resource "aws_iam_role_policy_attachment" "guardian_custom_policy" {
   role       = aws_iam_role.guardian_iam_role.name
