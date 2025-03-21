@@ -177,3 +177,7 @@ pypy.py
 python
 utility/unused_aws_utils.py
 .vscode
+*/.terraform
+terraform/.terraform.lock.hcl
+terraform/.terraform.tfstate.lock.info
+terraform/terraform.tfstate
