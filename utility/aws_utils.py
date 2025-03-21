@@ -1,4 +1,4 @@
-import boto3, json
+import boto3, json, re
 from botocore.exceptions import ClientError, BotoCoreError
 
 region_name = "eu-west-2"
@@ -142,8 +142,19 @@ def create_sqs_queue(queue_name: str, client=sqs_client):
     Returns:
         dict: The response from the create_queue call.
     """
+    # Validate the queue name
+    if not re.match(r'^[A-Za-z0-9_-]{1,80}$', queue_name):
+        raise ValueError("Queue name can only include alphanumeric characters, hyphens, or underscores, and must be between 1 and 80 characters.")
+    
+    # Append the .fifo suffix
+    queue_name_with_suffix = f"{queue_name}.fifo"
+    
+    # Check the total length after appending .fifo
+    if len(queue_name_with_suffix) > 80:
+        raise ValueError("Queue name, including the '.fifo' suffix, must not exceed 80 characters.")
+    
     return client.create_queue(
-        QueueName=f"{queue_name}.fifo",
+        QueueName=queue_name_with_suffix,
         Attributes={
             'DelaySeconds': '0',
             'MessageRetentionPeriod': '259200'  # 3 days
