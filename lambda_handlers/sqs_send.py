@@ -4,7 +4,7 @@ from utility.api_utils import get_guardian_data
 from utility.aws_utils import (
     create_sqs_queue,
     send_message_to_sqs,
-    sqs_client
+    sts_assume_role
 )
 
 # call lambda_handler from UI with selected queries
@@ -34,6 +34,7 @@ def send(queue_name: str, message: str) -> None:
     Returns:
         None
     """
+    sqs_client = sts_assume_role().client('sqs', 'eu-west-2')
     def check_queue_exists(queue_name: str) -> bool:
         """Check if the SQS queue exists.
 
@@ -53,7 +54,10 @@ def send(queue_name: str, message: str) -> None:
                 raise e
 
     if not check_queue_exists(queue_name):
-        queue = create_sqs_queue(queue_name)
+        queue = create_sqs_queue(queue_name=queue_name, cw=[
+            "/aws/lambda/guardian_sqs_send",
+            "sqs_send_log_stream"
+        ])
         queue_url: str = queue["QueueUrl"]
     else:
         queue_url: str = sqs_client.get_queue_url(QueueName=queue_name)

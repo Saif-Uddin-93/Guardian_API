@@ -3,7 +3,7 @@ from botocore.exceptions import ClientError
 from utility.aws_utils import (
     receive_messages_from_sqs,
     create_iam_role,
-    sqs_client
+    sts_assume_role
 )
 
 
@@ -30,6 +30,7 @@ def receive(queue_name: str) -> dict | None:
     Returns:
         dict: Returns the messages in the queue as a dictionary of messages (str)
     """
+    sqs_client = sts_assume_role().client('sqs', 'eu-west-2')
     def check_queue_exists(queue_name: str) -> bool:
         """Check if the SQS queue exists.
 

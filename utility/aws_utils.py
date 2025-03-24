@@ -32,7 +32,7 @@ def sts_assume_role(role_arn=role_arn, client=boto3.client('sts')):
 # assumed_role_session = sts_assume_role()
 
 # CloudWatch Logs client setup
-log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
+# log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
 
 # Ensure log stream exists, if not, create one
 def cw_log_stream(
