@@ -97,6 +97,10 @@ resource "aws_api_gateway_deployment" "guardian_deployment" {
   triggers = {
     redeployment = sha1(jsonencode(aws_api_gateway_integration.guardian_integration))
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_api_gateway_stage" "api_stage" {
