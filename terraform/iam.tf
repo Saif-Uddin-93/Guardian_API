@@ -121,9 +121,19 @@ resource "aws_iam_role_policy_attachment" "guardian_lambda_full" {
   policy_arn = "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "guardian_lambda" {
+  role       = aws_iam_role.lambda_iam_role.name
+  policy_arn = aws_iam_policy.lambda_permissions_policy.arn
+}
+
 resource "aws_iam_role_policy_attachment" "guardian_apigateway_full" {
   role       = aws_iam_role.apigw_iam_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
+}
+
+resource "aws_iam_role_policy_attachment" "guardian_apigateway" {
+  role       = aws_iam_role.apigw_iam_role.name
+  policy_arn = aws_iam_policy.apigw_permissions_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
@@ -131,6 +141,10 @@ resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "guardian_sqs" {
+  role       = aws_iam_role.sqs_iam_role.name
+  policy_arn = aws_iam_policy.sqs_permissions_policy.arn
+}
 
 # resource "aws_iam_role_policy_attachment" "guardian_custom_policy" {
 #   role       = aws_iam_role.guardian_iam_role.name
