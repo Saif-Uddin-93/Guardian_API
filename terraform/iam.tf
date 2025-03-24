@@ -37,8 +37,13 @@ resource "aws_iam_policy" "guardian_permissions_policy" {
           "lambda:*",
           "sqs:CreateQueue",
           "sqs:GetQueueAttributes",
+          "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents"
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents"
         ]
         Resource = "*"
       }
