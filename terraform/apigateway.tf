@@ -97,7 +97,18 @@ resource "aws_api_gateway_stage" "api_stage" {
   stage_name    = "dev"
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.apigw_log_group.arn
-    format          = "$context.requestId $context.identity.sourceIp $context.httpMethod $context.resourcePath $context.status"
+    format = jsonencode({
+      requestId       = "$context.requestId"
+      extendedRequestId = "$context.extendedRequestId"
+      ip              = "$context.identity.sourceIp"
+      caller          = "$context.identity.caller"
+      user            = "$context.identity.user"
+      requestTime     = "$context.requestTime"
+      httpMethod      = "$context.httpMethod"
+      resourcePath    = "$context.resourcePath"
+      status          = "$context.status"
+      responseLength  = "$context.responseLength"
+    })
   }
 }
 
