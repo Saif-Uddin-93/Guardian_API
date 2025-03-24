@@ -1,3 +1,7 @@
+resource "aws_api_gateway_account" "apigw_account" {
+  cloudwatch_role_arn = aws_iam_role.apigw_iam_role.arn
+}
+
 resource "aws_api_gateway_rest_api" "guardian_api" {
   name        = "guardian-api"
   description = "REST API to retrieve guardian data"
@@ -111,11 +115,6 @@ resource "aws_api_gateway_stage" "api_stage" {
     })
   }
 }
-
-resource "aws_api_gateway_account" "apigw_account" {
-  cloudwatch_role_arn = aws_iam_role.apigw_iam_role.arn
-}
-
 
 resource "aws_api_gateway_method_settings" "api_method_settings" {
   rest_api_id = aws_api_gateway_rest_api.guardian_api.id
