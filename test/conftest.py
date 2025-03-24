@@ -13,34 +13,42 @@ def aws_credentials():
     os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
 
 
+# mock sts client
+@pytest.fixture()
+def sts_client_fixture(aws_credentials):
+    with mock_aws():
+        yield boto3.Session().client('sts')
+
 # mock sqs client
 @pytest.fixture()
-def sqs_client_fixture(aws_credentials):
+def sqs_client_fixture(sts_client_fixture):
     with mock_aws():
-        yield boto3.client("sqs")
+        yield sts_assume_root(sts_client_fixture).client("sqs")
 
 
 # mock lambda client
 @pytest.fixture()
-def lambda_client_fixture(aws_credentials):
+def lambda_client_fixture(sts_client_fixture):
     with mock_aws():
-        yield boto3.client('lambda')
+        yield sts_assume_root(sts_client_fixture).client('lambda')
 
 
 # mock apigateway client v1
 @pytest.fixture()
-def apigw_client_fixture(aws_credentials):
+def apigw_client_fixture(sts_client_fixture):
     with mock_aws():
-        response = apigw_client('MOCK')
+        response = apigw_client(
+            integration_type='MOCK',
+            client=sts_assume_root(sts_client_fixture).client('apigateway'))
         client, api_id = response
         yield client, api_id
 
 
 # mock cloudwatch logs client
 @pytest.fixture()
-def cw_logs_client_fixture(aws_credentials):
+def cw_logs_client_fixture(sts_client_fixture):
     with mock_aws():
-        yield boto3.client('logs')
+        yield sts_assume_root(sts_client_fixture).client('logs')
 
 
 # # mock api gateway v2 client

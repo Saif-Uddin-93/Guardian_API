@@ -1,4 +1,4 @@
-import json
+import json, time
 from utility.aws_utils import (
     create_sqs_queue,
     send_message_to_sqs,

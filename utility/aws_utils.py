@@ -6,12 +6,14 @@ aws_account_id = '841162707768'
 role_name = 'guardian-iam-role'
 role_arn=f'arn:aws:iam::{aws_account_id}:role/{role_name}'
 
-def sts_assume_role():
-    current_session = boto3.Session()
-    sts_client = current_session.client('sts')
+def sts_assume_root(client = boto3.Session().client('sts')):
+    # returning boto3.Session() to avoid errors with 'sts'
+    return boto3.Session()
+
+    sts_client = client
 
     try:
-        assumed_role_object = sts_client.assume_role(
+        assumed_role_object = sts_client.assume_root(
             RoleArn=role_arn,
             RoleSessionName=f'{role_name}-Session'
         )
@@ -27,25 +29,24 @@ def sts_assume_role():
         region_name=region_name
     )
 
-# assumed_role_session = sts_assume_role()
-assumed_role_session = boto3
+# assumed_role_session = sts_assume_root()
+# assumed_role_session = boto3
 
 # CloudWatch Logs client setup
-logs_client = assumed_role_session.client('logs', region_name=region_name)
-  # Your CloudWatch Log Group
+# logs_client =
 log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
 
 # Ensure log stream exists, if not, create one
 def cw_log_stream(
         log_group_name,
         log_stream_name,
-        client = logs_client
+        client=sts_assume_root().client('logs', region_name=region_name)
     ):
-    print(log_group_name, log_stream_name, client)
+    # print(log_group_name, log_stream_name, client)
     try:
         client.create_log_group(logGroupName=log_group_name)
         client.create_log_stream(
-            logGroupName=log_group_name, 
+            logGroupName=log_group_name,
             logStreamName=log_stream_name
         )
     except client.exceptions.ResourceAlreadyExistsException:
@@ -53,10 +54,10 @@ def cw_log_stream(
 
 # Function to log to CloudWatch Logs
 def log_to_cloudwatch(
-    message, 
-    log_group_name = '/aws/lambda/LambdaTest',
-    log_stream_name = 'sqs-creation-stream',
-    client = logs_client
+    message,
+    log_group_name='/aws/lambda/LambdaTest',
+    log_stream_name='sqs-creation-stream',
+    client=sts_assume_root().client('logs', region_name=region_name)
 ):
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
     client.put_log_events(
@@ -68,9 +69,12 @@ def log_to_cloudwatch(
         }]
     )
 
-iam_client = assumed_role_session.client('iam', region_name=region_name)   
+# iam_client = assumed_role_session.client('iam', region_name=region_name)
 
-def create_iam_role(role_name: str=role_name, client=iam_client):
+def create_iam_role(
+        role_name: str=role_name,
+        client=sts_assume_root().client('iam', region_name=region_name)
+    ):
     """
     Create an IAM role with the specified client.
 
@@ -171,11 +175,11 @@ def create_iam_role(role_name: str=role_name, client=iam_client):
         return None, None
 
 # sqs client
-sqs_client = assumed_role_session.client('sqs', region_name=region_name)
+# sqs_client = assumed_role_session.client('sqs', region_name=region_name)
 
 def create_sqs_queue(
-        queue_name: str, 
-        client=sqs_client, 
+        queue_name: str,
+        client=sts_assume_root().client('sqs', region_name=region_name),
         cw=[]):
     """
     Create an SQS queue with the specified name.
@@ -191,26 +195,26 @@ def create_sqs_queue(
     cw_log_stream(*cw)
     # Strip any leading/trailing whitespaces from the queue_name
     queue_name = queue_name.strip()
-    
+
     # Validate the queue name
     if not re.match(r'^[A-Za-z0-9_-]{1,80}$', queue_name):
         error_message = "Queue name can only include alphanumeric characters, hyphens, or underscores, and must be between 1 and 80 characters."
         log_to_cloudwatch(error_message, *cw)  # Log to CloudWatch
         raise ValueError(error_message)
-    
+
     # Append the .fifo suffix
     queue_name_with_suffix = f"{queue_name}.fifo"
-    
+
     # Check the total length after appending .fifo
     if len(queue_name_with_suffix) > 80:
         error_message = "Queue name, including the '.fifo' suffix, must not exceed 80 characters."
         log_to_cloudwatch(error_message, *cw)  # Log to CloudWatch
         raise ValueError(error_message)
-    
+
     # Log the queue name being created to CloudWatch
     log_message = f"Creating queue with name: {queue_name_with_suffix}"
     log_to_cloudwatch(log_message, *cw)  # Log to CloudWatch
-    
+
     # Proceed with creating the queue
     try:
         return client.create_queue(
@@ -226,7 +230,11 @@ def create_sqs_queue(
         raise
 
 
-def send_message_to_sqs(url: str, message: str, client=sqs_client):
+def send_message_to_sqs(
+        url: str,
+        message: str,
+        client=sts_assume_root().client('sqs', region_name=region_name)
+    ):
     """
     Send a message to the specified SQS queue.
 
@@ -276,7 +284,11 @@ def send_message_to_sqs(url: str, message: str, client=sqs_client):
         return None
 
 
-def receive_messages_from_sqs(url: str, client=sqs_client, max_messages=10) -> list:
+def receive_messages_from_sqs(
+        url: str,
+        client=sts_assume_root().client('sqs', region_name=region_name),
+        max_messages=10
+    ) -> list:
     """
     Receive messages from the specified SQS queue.
 
@@ -293,26 +305,30 @@ def receive_messages_from_sqs(url: str, client=sqs_client, max_messages=10) -> l
     response = client.receive_message(
         QueueUrl=url,
         MaxNumberOfMessages=max_messages,
-        # WaitTimeSeconds=5  # Wait time to ensure messages are available
+        WaitTimeSeconds=5  # Wait time to ensure messages are available
     )
     if "Messages" in response:
-        response.get("Messages", [])
+        return response.get("Messages", [])
     else:
         return []
 
 
 # apigateway client v1
-api_client = assumed_role_session.client('apigateway', region_name=region_name)
+# api_client = assumed_role_session.client('apigateway', region_name=region_name)
 
 def create_api(api_name='guardian-api'):
     apigw_client(api_name=api_name)
 
-def apigw_client(integration_type='HTTP', api_name='guardian-api'):
+def apigw_client(
+        integration_type='HTTP',
+        api_name='guardian-api',
+        client=sts_assume_root().client('apigateway', region_name=region_name)
+    ):
 
     response = None
 
     def api_exists(name):
-        response = api_client.get_rest_apis()
+        response = client.get_rest_apis()
         for item in response['items']:
             if item['name'] == name:
                 return item['id']
@@ -321,7 +337,7 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
     api_id = api_exists(api_name)
 
     if not api_id:
-        response = api_client.create_rest_api(
+        response = client.create_rest_api(
             name = api_name,
             description = 'REST API to retrieve guardian data',
             endpointConfiguration = {
@@ -330,10 +346,10 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
         )
         api_id = response['id']
 
-        resources = api_client.get_resources(restApiId=api_id)
+        resources = client.get_resources(restApiId=api_id)
         root_id = resources['items'][0]['id']
 
-        api_client.create_usage_plan(
+        client.create_usage_plan(
             name='Daily',
             description='50 api calls per day',
             quota={
@@ -342,7 +358,7 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
             }
         )
 
-        api_client.put_method(
+        client.put_method(
             restApiId=api_id,
             resourceId=root_id,
             httpMethod='GET',
@@ -401,8 +417,8 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
   }
 }
 """
-        
-        api_client.put_integration(
+
+        client.put_integration(
             restApiId=api_id,
             resourceId=root_id,
             httpMethod='GET',
@@ -413,25 +429,28 @@ def apigw_client(integration_type='HTTP', api_name='guardian-api'):
         )
 
     try:
-        api_client.create_deployment(restApiId=api_id, stageName='dev')
+        client.create_deployment(restApiId=api_id, stageName='dev')
     except ClientError as e:
         print(f"Error creating deployment: {e.response['Error']['Message']}")
 
 
-    return api_client, api_id
+    return client, api_id
 
 
 # lambda client
-lambda_client = assumed_role_session.client('lambda', region_name=region_name)
+# lambda_client = assumed_role_session.client('lambda', region_name=region_name)
 
-def create_lambda(role_arn:str=role_arn, client = lambda_client):
+def create_lambda(
+        role_arn:str=role_arn,
+        client=sts_assume_root().client('lambda', region_name=region_name)
+    ):
     # Create functions
     with open('sqs_send.zip', 'rb') as f:
         sqs_send_code = f.read()
 
     with open('sqs_receive.zip', 'rb') as f:
         sqs_receive_code = f.read()
-    
+
     client.create_function(
         FunctionName='sqs_send',
         Runtime='python3.13',
@@ -457,7 +476,7 @@ def create_lambda(role_arn:str=role_arn, client = lambda_client):
     # Create layers
     with open('requests_layer.zip', 'rb') as f:
         requests_code = f.read()
-    
+
     with open('utility_layer.zip', 'rb') as f:
         utility_code = f.read()
 
@@ -468,7 +487,7 @@ def create_lambda(role_arn:str=role_arn, client = lambda_client):
             'ZipFile': requests_code
         }
     )
-    
+
     client.publish_layer_version(
         LayerName='utility',
         Description='Layer containing utility module',
