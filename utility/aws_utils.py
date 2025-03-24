@@ -432,60 +432,60 @@ def apigw_client(
     return client, api_id
 
 
-# lambda client
-def create_lambda(
-        role_arn:str=role_arn,
-        client=sts_assume_role().client('lambda', region_name=region_name)
-    ):
-    # Create functions
-    with open('sqs_send.zip', 'rb') as f:
-        sqs_send_code = f.read()
+# # lambda client
+# def create_lambda(
+#         role_arn:str=role_arn,
+#         client=sts_assume_role().client('lambda', region_name=region_name)
+#     ):
+#     # Create functions
+#     with open('sqs_send.zip', 'rb') as f:
+#         sqs_send_code = f.read()
 
-    with open('sqs_receive.zip', 'rb') as f:
-        sqs_receive_code = f.read()
+#     with open('sqs_receive.zip', 'rb') as f:
+#         sqs_receive_code = f.read()
 
-    client.create_function(
-        FunctionName='sqs_send',
-        Runtime='python3.13',
-        Role=role_arn,
-        Handler='sqs_send.lambda_handler',
-        Code={
-            'ZipFile': sqs_send_code
-        },
-        Description='Send a message to an SQS queue'
-    )
+#     client.create_function(
+#         FunctionName='sqs_send',
+#         Runtime='python3.13',
+#         Role=role_arn,
+#         Handler='sqs_send.lambda_handler',
+#         Code={
+#             'ZipFile': sqs_send_code
+#         },
+#         Description='Send a message to an SQS queue'
+#     )
 
-    client.create_function(
-        FunctionName='sqs_receive',
-        Runtime='python3.13',
-        Role=role_arn,
-        Handler='sqs_receive.lambda_handler',
-        Code={
-            'ZipFile': sqs_receive_code
-        },
-        Description='Receive messages from an SQS queue'
-    )
+#     client.create_function(
+#         FunctionName='sqs_receive',
+#         Runtime='python3.13',
+#         Role=role_arn,
+#         Handler='sqs_receive.lambda_handler',
+#         Code={
+#             'ZipFile': sqs_receive_code
+#         },
+#         Description='Receive messages from an SQS queue'
+#     )
 
-    # Create layers
-    with open('requests_layer.zip', 'rb') as f:
-        requests_code = f.read()
+#     # Create layers
+#     with open('requests_layer.zip', 'rb') as f:
+#         requests_code = f.read()
 
-    with open('utility_layer.zip', 'rb') as f:
-        utility_code = f.read()
+#     with open('utility_layer.zip', 'rb') as f:
+#         utility_code = f.read()
 
-    client.publish_layer_version(
-        LayerName='requests',
-        Description='Layer containing requests module',
-        Content={
-            'ZipFile': requests_code
-        }
-    )
+#     client.publish_layer_version(
+#         LayerName='requests',
+#         Description='Layer containing requests module',
+#         Content={
+#             'ZipFile': requests_code
+#         }
+#     )
 
-    client.publish_layer_version(
-        LayerName='utility',
-        Description='Layer containing utility module',
-        Content={
-            'ZipFile': utility_code
-        }
-    )
+#     client.publish_layer_version(
+#         LayerName='utility',
+#         Description='Layer containing utility module',
+#         Content={
+#             'ZipFile': utility_code
+#         }
+#     )
 
