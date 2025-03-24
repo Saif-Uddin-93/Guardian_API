@@ -6,14 +6,14 @@ aws_account_id = '841162707768'
 role_name = 'guardian-iam-role'
 role_arn=f'arn:aws:iam::{aws_account_id}:role/{role_name}'
 
-def sts_assume_root(client = boto3.Session().client('sts')):
+def sts_assume_role(role_arn=role_arn, client=boto3.client('sts')):
     # returning boto3.Session() to avoid errors with 'sts'
     return boto3.Session()
-
+    print(role_arn)
     sts_client = client
 
     try:
-        assumed_role_object = sts_client.assume_root(
+        assumed_role_object = sts_client.assume_role(
             RoleArn=role_arn,
             RoleSessionName=f'{role_name}-Session'
         )
@@ -29,8 +29,7 @@ def sts_assume_root(client = boto3.Session().client('sts')):
         region_name=region_name
     )
 
-# assumed_role_session = sts_assume_root()
-# assumed_role_session = boto3
+# assumed_role_session = sts_assume_role()
 
 # CloudWatch Logs client setup
 # logs_client =
@@ -40,7 +39,7 @@ log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
 def cw_log_stream(
         log_group_name,
         log_stream_name,
-        client=sts_assume_root().client('logs', region_name=region_name)
+        client=sts_assume_role().client('logs', region_name=region_name)
     ):
     # print(log_group_name, log_stream_name, client)
     try:
@@ -57,7 +56,7 @@ def log_to_cloudwatch(
     message,
     log_group_name='/aws/lambda/LambdaTest',
     log_stream_name='sqs-creation-stream',
-    client=sts_assume_root().client('logs', region_name=region_name)
+    client=sts_assume_role().client('logs', region_name=region_name)
 ):
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
     client.put_log_events(
@@ -73,7 +72,7 @@ def log_to_cloudwatch(
 
 def create_iam_role(
         role_name: str=role_name,
-        client=sts_assume_root().client('iam', region_name=region_name)
+        client=sts_assume_role().client('iam', region_name=region_name)
     ):
     """
     Create an IAM role with the specified client.
@@ -151,11 +150,11 @@ def create_iam_role(
             PolicyArn=policy_arn
         )
 
-        for policy in policies:
-            client.attach_role_policy(
-                RoleName=role_name,
-                PolicyArn=policy
-            )
+        # for policy in policies:
+        #     client.attach_role_policy(
+        #         RoleName=role_name,
+        #         PolicyArn=policy
+        #     )
 
         role_arn = role_response['Role']['Arn']
         role_id = client.get_role(RoleName=role_name)['Role']['RoleId']
@@ -179,7 +178,7 @@ def create_iam_role(
 
 def create_sqs_queue(
         queue_name: str,
-        client=sts_assume_root().client('sqs', region_name=region_name),
+        client=sts_assume_role().client('sqs', region_name=region_name),
         cw=[]):
     """
     Create an SQS queue with the specified name.
@@ -233,7 +232,7 @@ def create_sqs_queue(
 def send_message_to_sqs(
         url: str,
         message: str,
-        client=sts_assume_root().client('sqs', region_name=region_name)
+        client=sts_assume_role().client('sqs', region_name=region_name)
     ):
     """
     Send a message to the specified SQS queue.
@@ -286,7 +285,7 @@ def send_message_to_sqs(
 
 def receive_messages_from_sqs(
         url: str,
-        client=sts_assume_root().client('sqs', region_name=region_name),
+        client=sts_assume_role().client('sqs', region_name=region_name),
         max_messages=10
     ) -> list:
     """
@@ -322,7 +321,7 @@ def create_api(api_name='guardian-api'):
 def apigw_client(
         integration_type='HTTP',
         api_name='guardian-api',
-        client=sts_assume_root().client('apigateway', region_name=region_name)
+        client=sts_assume_role().client('apigateway', region_name=region_name)
     ):
 
     response = None
@@ -442,7 +441,7 @@ def apigw_client(
 
 def create_lambda(
         role_arn:str=role_arn,
-        client=sts_assume_root().client('lambda', region_name=region_name)
+        client=sts_assume_role().client('lambda', region_name=region_name)
     ):
     # Create functions
     with open('sqs_send.zip', 'rb') as f:
