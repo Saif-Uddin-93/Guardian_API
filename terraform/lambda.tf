@@ -25,7 +25,7 @@ data "archive_file" "sqs_receive_lambda" {
 resource "aws_lambda_function" "sqs_send_lambda" {
   filename         = "${path.module}/../lambda_handlers/sqs_send.zip"
   function_name    = "sqs_send"
-  role             = aws_iam_role.guardian_iam_role.arn
+  role             = aws_iam_role.lambda_iam_role.arn
   handler          = "sqs_send.lambda_handler"
 #   source_code_hash = data.archive_file.sqs_send_lambda.output_base64sha256
   runtime          = "python3.13"
@@ -49,7 +49,7 @@ resource "aws_lambda_function" "sqs_send_lambda" {
 resource "aws_lambda_function" "sqs_receive_lambda" {
   filename         = "${path.module}/../lambda_handlers/sqs_receive.zip"
   function_name    = "sqs_receive"
-  role             = aws_iam_role.guardian_iam_role.arn
+  role             = aws_iam_role.lambda_iam_role.arn
   handler          = "sqs_receive.lambda_handler"
 #   source_code_hash = data.archive_file.sqs_receive_lambda.output_base64sha256
   runtime          = "python3.13"

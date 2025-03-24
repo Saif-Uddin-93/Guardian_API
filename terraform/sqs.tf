@@ -1,4 +1,4 @@
-resource "aws_sqs_queue" "guardian-queue" {
+resource "aws_sqs_queue" "guardian_queue" {
   name                        = "guardian-queue.fifo"
   fifo_queue                  = true
   message_retention_seconds   = 259200  # Retain messages for 3 days

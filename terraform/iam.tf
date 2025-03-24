@@ -2,8 +2,8 @@ locals {
   account_id = data.aws_caller_identity.current.account_id
 }
 
-resource "aws_iam_role" "guardian_iam_role" {
-  name = "guardian-iam-role"
+resource "aws_iam_role" "lambda_iam_role" {
+  name = "lambda-iam-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -11,11 +11,7 @@ resource "aws_iam_role" "guardian_iam_role" {
       {
         Effect = "Allow"
         Principal = {
-          Service = "lambda.amazonaws.com",
-          # AWS = [
-          #   "arn:aws:sts::${local.account_id}:assumed-role/guardian-iam-role/sqs_send",
-          #   "arn:aws:sts::${local.account_id}:assumed-role/guardian-iam-role/sqs_receive"
-          # ]
+          Service = "lambda.amazonaws.com"
         }
         Action = "sts:AssumeRole"
       }
@@ -23,8 +19,49 @@ resource "aws_iam_role" "guardian_iam_role" {
   })
 }
 
-resource "aws_iam_policy" "guardian_permissions_policy" {
-  name        = "guardian-iam-policy"
+resource "aws_iam_policy" "lambda_permissions_policy" {
+  name        = "lambda_iam_policy"
+  description = "Permissions policy for lambda"
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Principal = {
+          AWS= "arn:aws:iam::${local.account_id}:root"
+        }
+        Action   = [
+          "lambda:*",
+        ]
+        Resource = [
+          "${aws_lambda_function.sqs_receive_lambda.arn}",
+          "${aws_lambda_function.sqs_send_lambda.arn}",
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "sqs_iam_role" {
+  name = "sqs_iam_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "sqs.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "sqs_permissions_policy" {
+  name        = "sqs-iam-policy"
   description = "Permissions policy for Guardian IAM role"
   
   policy = jsonencode({
@@ -32,18 +69,11 @@ resource "aws_iam_policy" "guardian_permissions_policy" {
     Statement = [
       {
         Effect   = "Allow"
+        Principal = {
+          AWS= "arn:aws:iam::${local.account_id}:root"
+        }
         Action   = [
-          "apigateway:*",
-          "lambda:*",
-          "sqs:CreateQueue",
-          "sqs:GetQueueAttributes",
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:DescribeLogGroups",
-          "logs:DescribeLogStreams",
-          "logs:PutLogEvents",
-          "logs:GetLogEvents",
-          "logs:FilterLogEvents"
+          "sqs:*"
         ]
         Resource = "*"
       }
@@ -51,23 +81,58 @@ resource "aws_iam_policy" "guardian_permissions_policy" {
   })
 }
 
+resource "aws_iam_role" "apigw_iam_role" {
+  name = "apigw-iam-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "apigateway.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "apigw_permissions_policy" {
+  name        = "apigw-iam-policy"
+  description = "Permissions policy for apigw IAM role"
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "apigateway:*"
+        ]
+        Resource = "aws_api_gateway_*"
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "guardian_lambda_full" {
-  role       = aws_iam_role.guardian_iam_role.name
+  role       = aws_iam_role.lambda_iam_role.name
   policy_arn = "arn:aws:iam::aws:policy/AWSLambda_FullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "guardian_apigateway_full" {
-  role       = aws_iam_role.guardian_iam_role.name
+  role       = aws_iam_role.apigw_iam_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator"
 }
 
 resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
-  role       = aws_iam_role.guardian_iam_role.name
+  role       = aws_iam_role.sqs_iam_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
 }
 
 
-resource "aws_iam_role_policy_attachment" "guardian_custom_policy" {
-  role       = aws_iam_role.guardian_iam_role.name
-  policy_arn = aws_iam_policy.guardian_permissions_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "guardian_custom_policy" {
+#   role       = aws_iam_role.guardian_iam_role.name
+#   policy_arn = aws_iam_policy.guardian_permissions_policy.arn
+# }
