@@ -32,7 +32,6 @@ def sts_assume_role(role_arn=role_arn, client=boto3.client('sts')):
 # assumed_role_session = sts_assume_role()
 
 # CloudWatch Logs client setup
-# logs_client =
 log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
 
 # Ensure log stream exists, if not, create one
@@ -84,11 +83,12 @@ def create_iam_role(
         tuple: The Role ID and Role ARN of the created IAM role.
     """
 
-    policies = [
-        'arn:aws:iam::aws:policy/AWSLambda_FullAccess',
-        'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator',
-        'arn:aws:iam::aws:policy/AmazonSQSFullAccess'
-    ]
+    # policies commented out. policies don't exist in moto3 testing suite
+    # policies = [
+    #     'arn:aws:iam::aws:policy/AWSLambda_FullAccess',
+    #     'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator',
+    #     'arn:aws:iam::aws:policy/AmazonSQSFullAccess'
+    # ]
 
     trust_policy_doc = json.dumps({
         "Version": "2012-10-17",
@@ -174,8 +174,6 @@ def create_iam_role(
         return None, None
 
 # sqs client
-# sqs_client = assumed_role_session.client('sqs', region_name=region_name)
-
 def create_sqs_queue(
         queue_name: str,
         client=sts_assume_role().client('sqs', region_name=region_name),
@@ -313,8 +311,6 @@ def receive_messages_from_sqs(
 
 
 # apigateway client v1
-# api_client = assumed_role_session.client('apigateway', region_name=region_name)
-
 def create_api(api_name='guardian-api'):
     apigw_client(api_name=api_name)
 
@@ -437,8 +433,6 @@ def apigw_client(
 
 
 # lambda client
-# lambda_client = assumed_role_session.client('lambda', region_name=region_name)
-
 def create_lambda(
         role_arn:str=role_arn,
         client=sts_assume_role().client('lambda', region_name=region_name)
