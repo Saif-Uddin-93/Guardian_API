@@ -12,10 +12,10 @@ resource "aws_iam_role" "guardian_iam_role" {
         Effect = "Allow"
         Principal = {
           Service = "lambda.amazonaws.com",
-          AWS = [
-            "arn:aws:sts::${local.account_id}:assumed-role/guardian-iam-role/sqs_send",
-            "arn:aws:sts::${local.account_id}:assumed-role/guardian-iam-role/sqs_receive"
-          ]
+          # AWS = [
+          #   "arn:aws:sts::${local.account_id}:assumed-role/guardian-iam-role/sqs_send",
+          #   "arn:aws:sts::${local.account_id}:assumed-role/guardian-iam-role/sqs_receive"
+          # ]
         }
         Action = "sts:AssumeRole"
       }
