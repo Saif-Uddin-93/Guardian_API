@@ -96,7 +96,7 @@ resource "aws_api_gateway_stage" "api_stage" {
   rest_api_id   = aws_api_gateway_rest_api.guardian_api.id
   stage_name    = "dev"
   access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_logs.arn
+    destination_arn = aws_cloudwatch_log_group.apigw_log_group.arn
     format          = "$context.requestId $context.identity.sourceIp $context.httpMethod $context.resourcePath $context.status"
   }
 }

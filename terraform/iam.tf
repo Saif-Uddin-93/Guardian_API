@@ -70,7 +70,7 @@ resource "aws_iam_policy" "sqs_permissions_policy" {
       {
         Effect   = "Allow"
         Principal = {
-          AWS= "arn:aws:iam::${local.account_id}:root"
+          AWS     = "arn:aws:iam::${local.account_id}:root"
         }
         Action   = [
           "sqs:*"
@@ -136,3 +136,15 @@ resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
 #   role       = aws_iam_role.guardian_iam_role.name
 #   policy_arn = aws_iam_policy.guardian_permissions_policy.arn
 # }
+
+data "aws_iam_policy_document" "sqs_policy_doc" {
+  statement {
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+
+    actions       = ["sqs:*"]
+    resources     = [aws_sqs_queue.guardian_queue.arn]
+  }
+}
