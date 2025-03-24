@@ -10,7 +10,8 @@ resource "aws_sqs_queue" "guardian_queue" {
   }
 }
 
+
 resource "aws_sqs_queue_policy" "guardian_queue_policy" {
   queue_url = aws_sqs_queue.guardian_queue.id
-  policy    = aws_iam_policy_document.sqs_policy_doc.json
+  policy    = data.aws_iam_policy_document.sqs_policy_doc.json
 }
