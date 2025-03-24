@@ -15,14 +15,14 @@ def aws_credentials():
 
 # mock sqs client
 @pytest.fixture()
-def sqs_client(aws_credentials):
+def sqs_client_fixture(aws_credentials):
     with mock_aws():
         yield boto3.client("sqs")
 
 
 # mock lambda client
 @pytest.fixture()
-def lambda_client(aws_credentials):
+def lambda_client_fixture(aws_credentials):
     with mock_aws():
         yield boto3.client('lambda')
 
@@ -34,6 +34,13 @@ def apigw_client_fixture(aws_credentials):
         response = apigw_client('MOCK')
         client, api_id = response
         yield client, api_id
+
+
+# mock cloudwatch logs client
+@pytest.fixture()
+def cw_logs_client_fixture(aws_credentials):
+    with mock_aws():
+        yield boto3.client('logs')
 
 
 # # mock api gateway v2 client

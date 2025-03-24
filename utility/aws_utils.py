@@ -27,7 +27,8 @@ def sts_assume_role():
         region_name=region_name
     )
 
-assumed_role_session = sts_assume_role()
+# assumed_role_session = sts_assume_role()
+assumed_role_session = boto3
 
 # CloudWatch Logs client setup
 logs_client = assumed_role_session.client('logs', region_name=region_name)
@@ -35,23 +36,30 @@ logs_client = assumed_role_session.client('logs', region_name=region_name)
 log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
 
 # Ensure log stream exists, if not, create one
-def create_log_stream(
-    log_group_name = '/aws/lambda/LambdaTest',
-    log_stream_name = 'sqs-creation-stream'
-):
+def cw_log_stream(
+        log_group_name,
+        log_stream_name,
+        client = logs_client
+    ):
+    print(log_group_name, log_stream_name, client)
     try:
-        logs_client.create_log_stream(logGroupName=log_group_name, logStreamName=log_stream_name)
-    except logs_client.exceptions.ResourceAlreadyExistsException:
+        client.create_log_group(logGroupName=log_group_name)
+        client.create_log_stream(
+            logGroupName=log_group_name, 
+            logStreamName=log_stream_name
+        )
+    except client.exceptions.ResourceAlreadyExistsException:
         pass  # Log stream already exists
 
 # Function to log to CloudWatch Logs
 def log_to_cloudwatch(
     message, 
     log_group_name = '/aws/lambda/LambdaTest',
-    log_stream_name = 'sqs-creation-stream'
+    log_stream_name = 'sqs-creation-stream',
+    client = logs_client
 ):
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
-    logs_client.put_log_events(
+    client.put_log_events(
         logGroupName=log_group_name,
         logStreamName=log_stream_name,
         logEvents=[{
@@ -165,7 +173,10 @@ def create_iam_role(role_name: str=role_name, client=iam_client):
 # sqs client
 sqs_client = assumed_role_session.client('sqs', region_name=region_name)
 
-def create_sqs_queue(queue_name: str, client=sqs_client):
+def create_sqs_queue(
+        queue_name: str, 
+        client=sqs_client, 
+        cw=[]):
     """
     Create an SQS queue with the specified name.
 
@@ -176,14 +187,15 @@ def create_sqs_queue(queue_name: str, client=sqs_client):
     Returns:
         dict: The response from the create_queue call.
     """
-    
+    # Ensure the log stream exists before starting to log
+    cw_log_stream(*cw)
     # Strip any leading/trailing whitespaces from the queue_name
     queue_name = queue_name.strip()
     
     # Validate the queue name
     if not re.match(r'^[A-Za-z0-9_-]{1,80}$', queue_name):
         error_message = "Queue name can only include alphanumeric characters, hyphens, or underscores, and must be between 1 and 80 characters."
-        log_to_cloudwatch(error_message)  # Log to CloudWatch
+        log_to_cloudwatch(error_message, *cw)  # Log to CloudWatch
         raise ValueError(error_message)
     
     # Append the .fifo suffix
@@ -192,12 +204,12 @@ def create_sqs_queue(queue_name: str, client=sqs_client):
     # Check the total length after appending .fifo
     if len(queue_name_with_suffix) > 80:
         error_message = "Queue name, including the '.fifo' suffix, must not exceed 80 characters."
-        log_to_cloudwatch(error_message)  # Log to CloudWatch
+        log_to_cloudwatch(error_message, *cw)  # Log to CloudWatch
         raise ValueError(error_message)
     
     # Log the queue name being created to CloudWatch
     log_message = f"Creating queue with name: {queue_name_with_suffix}"
-    log_to_cloudwatch(log_message)  # Log to CloudWatch
+    log_to_cloudwatch(log_message, *cw)  # Log to CloudWatch
     
     # Proceed with creating the queue
     try:
@@ -210,11 +222,8 @@ def create_sqs_queue(queue_name: str, client=sqs_client):
         )
     except ClientError as e:
         error_message = f"Error creating queue: {e.response['Error']['Message']}"
-        log_to_cloudwatch(error_message)  # Log to CloudWatch
+        log_to_cloudwatch(error_message, *cw)  # Log to CloudWatch
         raise
-
-# Ensure the log stream exists before starting to log
-create_log_stream()
 
 
 def send_message_to_sqs(url: str, message: str, client=sqs_client):
