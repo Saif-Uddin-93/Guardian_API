@@ -133,6 +133,11 @@ resource "aws_iam_role_policy_attachment" "guardian_apigateway" {
   policy_arn = aws_iam_policy.apigw_permissions_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "apigw_logs" {
+  role       = aws_iam_role.apigw_iam_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+}
+
 resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
   role       = aws_iam_role.sqs_iam_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
