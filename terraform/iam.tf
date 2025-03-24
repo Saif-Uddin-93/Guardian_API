@@ -12,6 +12,7 @@ resource "aws_iam_role" "lambda_iam_role" {
         Effect = "Allow"
         Principal = {
           Service = "lambda.amazonaws.com"
+          AWS     = "arn:aws:iam::${local.account_id}:root"
         }
         Action = "sts:AssumeRole"
       }
@@ -28,9 +29,6 @@ resource "aws_iam_policy" "lambda_permissions_policy" {
     Statement = [
       {
         Effect   = "Allow"
-        Principal = {
-          AWS= "arn:aws:iam::${local.account_id}:root"
-        }
         Action   = [
           "lambda:*",
         ]
@@ -53,6 +51,7 @@ resource "aws_iam_role" "sqs_iam_role" {
         Effect = "Allow"
         Principal = {
           Service = "sqs.amazonaws.com"
+          AWS     = "arn:aws:iam::${local.account_id}:root"
         }
         Action = "sts:AssumeRole"
       }
@@ -69,9 +68,6 @@ resource "aws_iam_policy" "sqs_permissions_policy" {
     Statement = [
       {
         Effect   = "Allow"
-        Principal = {
-          AWS     = "arn:aws:iam::${local.account_id}:root"
-        }
         Action   = [
           "sqs:*"
         ]
@@ -91,6 +87,7 @@ resource "aws_iam_role" "apigw_iam_role" {
         Effect = "Allow"
         Principal = {
           Service = "apigateway.amazonaws.com"
+          AWS     = "arn:aws:iam::${local.account_id}:root"
         }
         Action = "sts:AssumeRole"
       }
