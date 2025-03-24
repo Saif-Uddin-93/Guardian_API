@@ -102,7 +102,7 @@ resource "aws_api_gateway_stage" "api_stage" {
 }
 
 resource "aws_api_gateway_account" "apigw_account" {
-  cloudwatch_role_arn = aws_iam_role.guardian_iam_role.arn
+  cloudwatch_role_arn = aws_iam_role.apigw_iam_role.arn
 }
 
 

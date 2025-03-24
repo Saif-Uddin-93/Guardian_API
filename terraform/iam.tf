@@ -110,7 +110,7 @@ resource "aws_iam_policy" "apigw_permissions_policy" {
         Action   = [
           "apigateway:*"
         ]
-        Resource = "aws_api_gateway_*"
+        Resource = "*"
       }
     ]
   })
