@@ -22,6 +22,17 @@ $(document).ready(function () {
         $("#article-results").empty();
     });
 
+    $("#sqs").on("click", function () {
+        console.log("sending to SQS")
+        api = ""
+        fetch(api)
+            .then(function (response) {
+                return response.json()
+            }).then(function(data){
+                console.log(data)
+            })
+    })
+
     $(".search").on("click", function () {
         $("#article-results").empty();
         articleNumber = 0;
