@@ -26,3 +26,5 @@ let region = "eu-west-2"
 let stage = "dev"
 apiTemplate = `https://${apiID}.execute-api.${region}.amazonaws.com/${stage}`
 
+fetch
+
