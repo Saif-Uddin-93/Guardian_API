@@ -1,14 +1,19 @@
-* {
+/* * {
     -webkit-border-radius: 4px !important;
        -moz-border-radius: 4px !important;
             border-radius: 4px !important;
-  }
+  } */
+.card{
+    margin-bottom: 1rem;
+}
 .card-body{
     padding: 35px;
 }
 .card-header{
     background-color: rgb(55, 54, 54) !important;
     border-color: rgb(55, 54, 54) !important;
+    display: flex;
+    justify-content: space-between;
 }
 .bg-dark{
     border-color: rgb(55, 54, 54) !important;
@@ -20,4 +25,15 @@
 }
 #article-results :not(:first-child){
         margin-top: 1rem;
+}
+#sqs{
+    background-color: white;
+    color: black;
+    &:hover{
+        background-color: rgb(45, 45, 45);
+        color: white;
+    }
+    &:active{
+        background-color: rgb(75, 75, 75);
+    }
 }

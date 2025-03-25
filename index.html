@@ -19,7 +19,7 @@
         <!-- Jumbotron for Title -->
         <div class="p-5 mb-4 bg-body-tertiary rounded-3">
             <div class="container-fluid py-5">
-              <h1 class="display-5 text-center">Guardian Search</h1>
+              <h1 class="display-5 text-center">Guardian API Search</h1>
             </div>
           </div>
             <div class="search-container">
@@ -31,7 +31,7 @@
                             <div class="mb-3">
                                 <div class="row">
                                     <br>
-                                    <label for="search" class="form-label">Search Term:</label>
+                                    <label for="search-string" class="form-label">Search Term:</label>
                                     <div class="input-group mb-3">
                                         <input type="text" class="form-control" aria-describedby="sizing-addon2" id="search-string">
                                     </div>
@@ -51,7 +51,9 @@
             <div class="articles-container">
                 <div class="card">
                     <div class="card-header text-light bg-dark">
-                        <i class="fa fa-th" aria-hidden="true"></i> Top Articles</div>
+                        <div><i class="fa fa-th" aria-hidden="true"></i> Top Articles</div>
+                        <button id="sqs" class="btn btn-outline-secondary">send to SQS</button>
+                    </div>
                     <div class="card-body" id="article-results">
                     </div>
                 </div>
