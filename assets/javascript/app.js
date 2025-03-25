@@ -1,11 +1,8 @@
 /* eslint-disable prettier/prettier */
 $(document).ready(function () {
 
-    // var apiURL = "https://gnews.io/api/v4/search?";
-    // var key = "&country=us&max=10&token=d06b56befd778f95afde57c26ebc9890";
     var key = ""
     var searchString = "";
-    // var queryURL;
     var articleNumber = 0;
 
     const build_api_url = (term="tech", opts=[]) => {
@@ -27,8 +24,6 @@ $(document).ready(function () {
         $("#article-results").empty();
         articleNumber = 0;
         searchString = $("#search-string").val();
-        // queryURL = apiURL + "q=" + searchString + key;
-        // console.log('query: ', queryURL)
 
         fetch(build_api_url(opts = [["from-date", "2020-01-01"], ["page-size", "1"]]))
             .then(function (response) {
