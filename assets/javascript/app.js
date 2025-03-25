@@ -4,7 +4,7 @@ $(document).ready(function () {
     var key = ""
     var articleNumber = 0;
 
-    function build_api_url (term="", opts=[]) {
+    function build_guardian_api_url (term="", opts=[]) {
         searchTerm = $("#search-string").val() ? $("#search-string").val() : term
         filters = ""
         console.log(opts)
@@ -36,7 +36,7 @@ $(document).ready(function () {
     $(".search").on("click", function () {
         $("#article-results").empty();
         articleNumber = 0;
-        api = build_api_url()
+        api = build_guardian_api_url()
         fetch(api)
             .then(function (response) {
                 return response.json();
@@ -53,7 +53,8 @@ $(document).ready(function () {
                     title.text(data.response.results[i].webTitle);
                     var description = $("<div>");
                     description.addClass("description");
-                    description.html(data.response.results[i].blocks.body[0].bodyHtml);
+                    var iframeFix = data.response.results[i].blocks.body[0].bodyHtml.replace('<iframe height="480" width="854"', "<iframe")
+                    description.html(iframeFix);
                     console.log(description)
                     var number = $("<div class='articleNumber'>").text(`${articleNumber}.`);
                     $(article).append(number, title, description);
