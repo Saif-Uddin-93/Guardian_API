@@ -1,5 +1,5 @@
-var searchButton = $("#search-button");
-var ratingCheckbox = $("#rating-check");
+let searchButton = $("#search-button");
+let ratingCheckbox = $("#rating-check");
 
 const apiURI = () => ($("#search-term").val() && $("#aws-api").val()) ? $("#aws-api").val() : "";
 
@@ -20,4 +20,9 @@ ratingCheckbox.on("click", function(){
         $("#rating").prop("disabled", true);
     }
 })
+
+let apiID = "l3sxz02jal"
+let region = "eu-west-2"
+let stage = "dev"
+apiTemplate = `https://${apiID}.execute-api.${region}.amazonaws.com/${stage}`
 
