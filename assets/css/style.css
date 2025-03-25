@@ -1,0 +1,15 @@
+* {
+    -webkit-border-radius: 4px !important;
+       -moz-border-radius: 4px !important;
+            border-radius: 4px !important;
+  }
+.card-body{
+    padding: 35px;
+}
+.card-header{
+    background-color: rgb(55, 54, 54) !important;
+    border-color: rgb(55, 54, 54) !important;
+}
+.bg-dark{
+    border-color: rgb(55, 54, 54) !important;
+}
