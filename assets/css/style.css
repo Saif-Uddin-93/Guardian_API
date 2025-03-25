@@ -13,3 +13,11 @@
 .bg-dark{
     border-color: rgb(55, 54, 54) !important;
 }
+.articleNumber{
+    font-size: 2rem;
+    font-weight: 700;
+    padding-left: 50px;
+}
+#article-results :not(:first-child){
+        margin-top: 1rem;
+}

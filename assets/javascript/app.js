@@ -2,16 +2,18 @@
 $(document).ready(function () {
 
     var key = ""
-    var searchString = "";
     var articleNumber = 0;
 
-    const build_api_url = (term="tech", opts=[]) => {
+    function build_api_url (term="", opts=[]) {
         searchTerm = $("#search-string").val() ? $("#search-string").val() : term
         filters = ""
+        console.log(opts)
         opts.forEach(keyVal => {
+            console.log(keyVal)
             filters += `${keyVal[0]}=${keyVal[1]}&`
         });
-        return `https://content.guardianapis.com/search?q=${searchTerm}&show-blocks=body&${filters}api-key=${key || 'test'}`
+        console.log(filters)
+        return searchTerm ? `https://content.guardianapis.com/search?q=${searchTerm}&show-blocks=body&${filters}api-key=${key || 'test'}` : null
     }
 
     $(".clear").click(function () {
@@ -23,12 +25,12 @@ $(document).ready(function () {
     $(".search").on("click", function () {
         $("#article-results").empty();
         articleNumber = 0;
-        searchString = $("#search-string").val();
-
-        fetch(build_api_url(opts = [["from-date", "2020-01-01"], ["page-size", "1"]]))
+        api = build_api_url()
+        fetch(api)
             .then(function (response) {
                 return response.json();
             }).then(function (data) {
+                console.log(api)
                 console.log(data);
                 console.log(data.response.results);
                 for (i = 0; i < data.response.results.length; i++) {
@@ -42,7 +44,7 @@ $(document).ready(function () {
                     description.addClass("description");
                     description.html(data.response.results[i].blocks.body[0].bodyHtml);
                     console.log(description)
-                    var number = $("<div class='articleNumber'>").text(articleNumber);
+                    var number = $("<div class='articleNumber'>").text(`${articleNumber}.`);
                     $(article).append(number, title, description);
                     $("#article-results").append(article);
                 }
