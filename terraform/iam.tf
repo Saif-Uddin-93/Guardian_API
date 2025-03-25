@@ -35,6 +35,7 @@ resource "aws_iam_policy" "lambda_permissions_policy" {
         Resource = [
           "${aws_lambda_function.sqs_receive_lambda.arn}",
           "${aws_lambda_function.sqs_send_lambda.arn}",
+          "*"
         ]
       }
     ]
@@ -148,11 +149,6 @@ resource "aws_iam_role_policy_attachment" "guardian_sqs" {
   policy_arn = aws_iam_policy.sqs_permissions_policy.arn
 }
 
-# resource "aws_iam_role_policy_attachment" "guardian_custom_policy" {
-#   role       = aws_iam_role.guardian_iam_role.name
-#   policy_arn = aws_iam_policy.guardian_permissions_policy.arn
-# }
-
 data "aws_iam_policy_document" "sqs_policy_doc" {
   statement {
     principals {
@@ -164,3 +160,26 @@ data "aws_iam_policy_document" "sqs_policy_doc" {
     resources     = [aws_sqs_queue.guardian_queue.arn]
   }
 }
+
+resource "aws_lambda_permission" "apigw_send" {
+  statement_id  = "AllowExecutionFromAPIGatewaySend"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.sqs_send_lambda.arn
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "arn:aws:execute-api:eu-west-2:${local.account_id}:${aws_api_gateway_rest_api.guardian_api.id}/*/*"
+}
+
+resource "aws_lambda_permission" "apigw_receive" {
+  statement_id  = "AllowExecutionFromAPIGatewayReceive"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.sqs_receive_lambda.arn
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "arn:aws:execute-api:eu-west-2:${local.account_id}:${aws_api_gateway_rest_api.guardian_api.id}/*/*"
+}
+
+# resource "aws_iam_role_policy_attachment" "guardian_custom_policy" {
+#   role       = aws_iam_role.guardian_iam_role.name
+#   policy_arn = aws_iam_policy.guardian_permissions_policy.arn
+# }

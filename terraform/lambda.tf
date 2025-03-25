@@ -68,17 +68,3 @@ resource "aws_lambda_function" "sqs_receive_lambda" {
     size = 512
   }
 }
-
-resource "aws_lambda_permission" "apigw_send" {
-  statement_id  = "AllowExecutionFromAPIGatewaySend"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.sqs_send_lambda.arn
-  principal     = "apigateway.amazonaws.com"
-}
-
-resource "aws_lambda_permission" "apigw_receive" {
-  statement_id  = "AllowExecutionFromAPIGatewayReceive"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.sqs_receive_lambda.arn
-  principal     = "apigateway.amazonaws.com"
-}
