@@ -33,6 +33,17 @@ resource "aws_api_gateway_method" "guardian_method" {
   }
 }
 
+resource "aws_api_gateway_method_response" "get_method_response" {
+  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
+  resource_id = aws_api_gateway_resource.guardian_resource.id
+  http_method = aws_api_gateway_method.guardian_method.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
+}
+
 resource "aws_api_gateway_integration" "guardian_integration" {
   rest_api_id             = aws_api_gateway_rest_api.guardian_api.id
   resource_id             = aws_api_gateway_resource.guardian_resource.id
@@ -48,6 +59,17 @@ resource "aws_api_gateway_integration" "guardian_integration" {
   "body" : $input.json('$')
 }
 EOF
+  }
+}
+
+resource "aws_api_gateway_integration_response" "get_integration_response" {
+  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
+  resource_id = aws_api_gateway_resource.guardian_resource.id
+  http_method = aws_api_gateway_method.guardian_method.http_method
+  status_code = aws_api_gateway_method_response.get_method_response.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = "'*'"
   }
 }
 
