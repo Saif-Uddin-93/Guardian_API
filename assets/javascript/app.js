@@ -24,14 +24,22 @@ $(document).ready(function () {
 
     $("#sqs").on("click", function () {
         console.log("sending to SQS")
-        api = ""
-        fetch(api)
-            .then(function (response) {
-                return response.json()
-            }).then(function(data){
-                console.log(data)
-            })
-    })
+        apiID = $("#aws-api").val()
+        console.log(apiID)
+        // const re = new RegExp("\\.execute-api\\.eu-west-2\\.amazonaws\\.com/dev$"); 
+        const re = /^[a-z0-9]{10,12}$/;
+        validApi = re.test(apiID)
+        console.log(validApi)
+        if (validApi){
+            api = `https://${apiID}.execute-api.eu-west-2.amazonaws.com/dev`
+            fetch(api)
+                .then(function (response) {
+                    return response.json()
+                }).then(function(data){
+                    console.log(data)
+                })
+            }
+        })
 
     $(".search").on("click", function () {
         $("#article-results").empty();
