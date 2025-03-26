@@ -19,7 +19,8 @@ def lambda_handler(event: dict, context):
 
     return {
         'statusCode': 200,
-        'guardian': data
+        'guardian': data,
+        'event': json.dumps(event)
     }
 
 
