@@ -32,7 +32,6 @@ $(document).ready(function () {
     })
 
     function build_guardian_api_url (term="", opts=[]) {
-        searchTerm = $("#search-string").val() ? $("#search-string").val() : term
         filters = ""
         console.log(opts)
         opts.forEach(keyVal => {
@@ -40,7 +39,7 @@ $(document).ready(function () {
             filters += `${keyVal[0]}=${keyVal[1]}&`
         });
         console.log(filters)
-        return searchTerm ? `https://content.guardianapis.com/search?q=${searchTerm}&show-blocks=body&${filters}api-key=${key || 'test'}` : null
+        return term ? `https://content.guardianapis.com/search?q=${term}&show-blocks=body&${filters}api-key=${key || 'test'}` : null
     }
 
     $(".clear").click(function () {
@@ -69,8 +68,19 @@ $(document).ready(function () {
         })
 
     $(".search").on("click", function () {
+        if(!$("#search-string").val()){
+            return
+        }
         $("#article-results").empty();
         articleNumber = 0;
+        searchTerm = $("#search-string").val() ? $("#search-string").val() : ""
+        filters = [
+            ["queue-name", `${$('#queue-string').val() || 'guardian-queue'}`],
+            ["from-date", `${$('#date-from').val()}`],
+            ["to-date", `${$('#date-to').val()}`],
+            ["page-size", `${$('#page-size').val()}`],
+            ["star-rating", `${$('#rating-output').val()}`],
+        ]
         api = build_guardian_api_url()
         fetch(api)
             .then(function (response) {

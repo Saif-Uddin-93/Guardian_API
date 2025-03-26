@@ -22,7 +22,7 @@
               <h1 class="display-5 text-center">Guardian API Search</h1>
             </div>
         </div>
-        <div class="note">*Note: refer to <a href="https://github.com/Saif-Uddin-93/Guardian_API/blob/main/readme.md" target="_blank">README in GitHub repo</a></div>
+        <div class="note"><span style="text-decoration: underline; font-size: 1rem;">*Note:</span> refer to <a href="https://github.com/Saif-Uddin-93/Guardian_API/blob/main/readme.md" target="_blank">README in GitHub repo</a></div>
         <div class="search-container">
             <div class="card mb-4">
                 <div class="card-header text-light bg-dark">
@@ -33,8 +33,8 @@
                             <div class="row">
                                 <br>
                                 <label for="search-string" class="form-label">Search Term:</label>
-                                <div class="input-group mb-3">
-                                    <input type="text" class="form-control" aria-describedby="sizing-addon2" id="search-string" placeholder="e.g. tech">
+                                <div class="input-group">
+                                    <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2" id="search-string" placeholder="e.g. tech">
                                 </div>
                             </div>
                             <br>
@@ -83,7 +83,11 @@
                             <div class="row">
                                 <label for="aws-api" class="form-label">Input AWS API ID:</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" aria-describedby="sizing-addon2" id="aws-api" placeholder="e.g. 4c1d1ea1db">
+                                    <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2" id="aws-api" placeholder="e.g. 4c1d1ea1db">
+                                </div>
+                                <label for="queue-string" class="form-label">Queue name:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2" id="queue-string" placeholder="default: guardian-queue">
                                 </div>
                             </div>
                         </div>    
