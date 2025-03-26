@@ -3,9 +3,15 @@ $(document).ready(function () {
 
     var key = ""
     var articleNumber = 0;
+    var filterBtn = $("#filter-btn")
     var ratingCheckbox = $("#rating-check")
-    var ratingThumb = $('.range-thumb')
-    
+    var ratingThumb = $(".range-thumb")
+
+    filterBtn.on("click", function () {
+        filtersVisible = $("#filters").prop("hidden")
+        $("#filters").prop("hidden", !filtersVisible)
+    })
+
     ratingCheckbox.on("click", function(){
         if(ratingCheckbox.prop("checked")){
             $("#rating").prop("disabled", false);
