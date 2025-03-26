@@ -52,17 +52,17 @@
                                 </div>
                                 <br>
                                 <br>
-                                <div id="filters" hidden>
+                                <div id="filters">
                                     <p>Filters <span>(optional)</span> :</p>
-                                    <div>
+                                    <div class="mb-2">
                                         <label for="date-from">Date From:</label>
                                         <input type="date" id="date-from" class="input-group-text mb-2" name="date-from">
                                     </div>
-                                    <div>
+                                    <div class="mb-2">
                                         <label for="date-to">Date To:</label>
                                         <input type="date" id="date-to" class="input-group-text mb-2" name="date-to">
                                     </div>
-                                    <div>
+                                    <div class="mb-2">
                                         <label for="page-size">Page Size:</label>
                                         <input type="number" id="page-size" class="input-group-text mb-2" name="page-size" min="1" max="50" placeholder="10">
                                     </div>
@@ -70,7 +70,10 @@
                                         <label for="rating" class="me-1">Rating:</label>
                                         <input type="checkbox" id="rating-check" name="rating-check" >
                                         <span class="me-1">Enable</span>
-                                        <input type="range" id="rating" class="form-range range-thumb" name="page-size" min="1" max="5" step="0.15" disabled>
+                                        <input type="range" id="rating" class="form-range range-thumb me-2" name="rating" min="1" max="5" step="0.1" disabled>
+                                        <input type="number" id="rating-output" class="input-group-text mb-2" name="rating-output" min="1" max="50" disabled>
+                                        <!-- <div class="d-flex flex-row align-content-center justify-content-center">
+                                        </div> -->
                                     </div>
                                     <br>
                                     <br>

@@ -90,7 +90,7 @@ input[type='range']::-webkit-slider-runnable-track {
     height: 10px;
     -webkit-appearance: none;
     background-color: #a2a2a2;
-    margin-top: -5px;
+    margin-top: 13%;
   }
 
 input[type="range"]::-moz-range-thumb {

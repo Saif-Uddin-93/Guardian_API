@@ -13,16 +13,14 @@ $(document).ready(function () {
     })
 
     ratingCheckbox.on("click", function(){
-        if(ratingCheckbox.prop("checked")){
-            $("#rating").prop("disabled", false);
-        }else{
-            $("#rating").prop("disabled", true);
-        }
+        ratingEnabled = $("#rating-check").prop("checked")
+        $("#rating").prop("disabled", !ratingEnabled);
     })
 
     ratingThumb.on("mouseup", function(){
         rating = $("#rating").val()
         roundedRating = Math.round(rating)
+        console.log(roundedRating)
         $("#rating").val(roundedRating)
     })
 
