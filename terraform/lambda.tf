@@ -1,10 +1,10 @@
 resource "aws_lambda_layer_version" "requests_layer" {
-  layer_name          = "requests_layer"
+  layer_name          = "requests"
   filename            = "${path.module}/../requests_layer.zip"
 }
 
 resource "aws_lambda_layer_version" "utility_layer" {
-  layer_name          = "utility_layer"
+  layer_name          = "utility"
   filename            = "${path.module}/../utility_layer.zip"
 }
 

@@ -45,7 +45,7 @@ def send(queue_name: str, message: str) -> None:
             bool: True if the queue exists, False otherwise.
         """
         try:
-            sqs_client.get_queue_url(QueueName=queue_name)
+            sqs_client.get_queue_url(QueueName=f"{queue_name}.fifo")
             return True
         except ClientError as e:
             if e.response['Error']['Code'] == 'AWS.SimpleQueueService.NonExistentQueue':
@@ -60,7 +60,7 @@ def send(queue_name: str, message: str) -> None:
         ])
         queue_url: str = queue["QueueUrl"]
     else:
-        queue_url: str = sqs_client.get_queue_url(QueueName=queue_name)
+        queue_url: str = sqs_client.get_queue_url(QueueName=f"{queue_name}.fifo")
         
     send_message_to_sqs(queue_url, message)
 
