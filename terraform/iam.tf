@@ -2,23 +2,28 @@ locals {
   account_id = data.aws_caller_identity.current.account_id
 }
 
-resource "aws_iam_role" "lambda_iam_role" {
-  name = "lambda-iam-role"
+# resource "aws_iam_role" "lambda_iam_role" {
+#   name = "lambda-iam-role"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "lambda.amazonaws.com"
-          AWS     = "arn:aws:iam::${local.account_id}:root"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Effect = "Allow"
+#         Principal = {
+#           Service = "lambda.amazonaws.com"
+#           AWS     = "arn:aws:iam::${local.account_id}:root"
+#         }
+#         Action = "sts:AssumeRole"
+#       }
+#     ]
+#   })
+# }
+
+resource "aws_iam_role" "lambda_role" {
+  assume_role_policy = data.aws_iam_policy_document.lambda_policy_doc.json
 }
+
 
 resource "aws_iam_policy" "lambda_permissions_policy" {
   name        = "lambda_iam_policy"
@@ -58,6 +63,17 @@ resource "aws_iam_role" "sqs_iam_role" {
       }
     ]
   })
+}
+
+resource "aws_iam_policy" "sqs_policy" {
+  name_prefix = "sqs-policy"
+  policy      = data.aws_iam_policy_document.sqs_policy_doc.json
+}
+
+# Attach
+resource "aws_iam_role_policy_attachment" "sqs_policy_attachment" {
+  role       = aws_iam_role.sqs_iam_role.name
+  policy_arn = aws_iam_policy.sqs_policy.arn
 }
 
 resource "aws_iam_policy" "sqs_permissions_policy" {
@@ -139,6 +155,34 @@ resource "aws_iam_role_policy_attachment" "apigw_logs" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }
 
+data "aws_iam_policy_document" "lambda_policy_doc" {
+  statement {
+    effect = "Allow"
+    # principals {
+    #   type        = "Service"
+    #   identifiers = ["lambda.amazonaws.com"]
+    # }
+
+    actions       = ["lambda:*"]
+    # actions       = ["sts:AssumeRole"]
+    resources     = ["*"]
+  }
+}
+
+data "aws_iam_policy_document" "sqs_policy_doc" {
+  statement {
+    effect = "Allow"
+    # principals {
+    #   type        = "Service"
+    #   identifiers = ["sqs.amazonaws.com"]
+    # }
+
+    actions       = ["sqs:*"]
+    # actions       = ["sts:AssumeRole"]
+    resources     = ["*"]
+  }
+}
+
 resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
   role       = aws_iam_role.sqs_iam_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSFullAccess"
@@ -147,18 +191,6 @@ resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
 resource "aws_iam_role_policy_attachment" "guardian_sqs" {
   role       = aws_iam_role.sqs_iam_role.name
   policy_arn = aws_iam_policy.sqs_permissions_policy.arn
-}
-
-data "aws_iam_policy_document" "sqs_policy_doc" {
-  statement {
-    principals {
-      type        = "*"
-      identifiers = ["*"]
-    }
-
-    actions       = ["sqs:*"]
-    resources     = [aws_sqs_queue.guardian_queue.arn]
-  }
 }
 
 resource "aws_lambda_permission" "apigw_send" {
