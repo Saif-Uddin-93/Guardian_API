@@ -75,13 +75,17 @@ $(document).ready(function () {
         articleNumber = 0;
         searchTerm = $("#search-string").val() ? $("#search-string").val() : ""
         filters = [
-            ["queue-name", `${$('#queue-string').val() || 'guardian-queue'}`],
             ["from-date", `${$('#date-from').val()}`],
             ["to-date", `${$('#date-to').val()}`],
             ["page-size", `${$('#page-size').val()}`],
             ["star-rating", `${$('#rating-output').val()}`],
         ]
-        api = build_guardian_api_url()
+        validFilters = filters.filter(function (element) {
+            if (element[1]) return element
+        })
+        console.log("filters: \n",filters)
+        console.log("valid filters: \n",validFilters)
+        api = build_guardian_api_url(searchTerm, validFilters)
         fetch(api)
             .then(function (response) {
                 return response.json();
