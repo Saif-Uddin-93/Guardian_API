@@ -13,7 +13,8 @@
     justify-content: space-between;
 }
 .search-container{
-    max-width: 60%;
+    width: 50%;
+    min-width: 50%;
     margin: auto;
 }
 .bg-dark{
@@ -100,6 +101,10 @@ input[type="range"]::-moz-range-thumb {
     /* background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gold"><path d="M12 .587l3.668 7.431 8.2 1.193-5.934 5.787 1.4 8.168L12 18.897l-7.334 3.869 1.4-8.168L.132 9.211l8.2-1.193z"/></svg>') no-repeat center; */
     background-size: 1.5em;
     cursor: pointer;
+}
+
+#rating{
+    margin-left: 5%;
 }
 
 #rating-span-parent{
