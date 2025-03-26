@@ -2,9 +2,6 @@
     -webkit-border-radius: 4px !important;
        -moz-border-radius: 4px !important;
             border-radius: 4px !important;
-  }
-.card{
-    margin-bottom: 1rem;
 }
 .card-body{
     padding: 35px;
@@ -14,6 +11,10 @@
     border-color: rgb(55, 54, 54) !important;
     display: flex;
     justify-content: space-between;
+}
+.search-container{
+    max-width: 60%;
+    margin: auto;
 }
 .bg-dark{
     border-color: rgb(55, 54, 54) !important;
