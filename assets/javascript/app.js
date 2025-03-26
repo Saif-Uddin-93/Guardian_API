@@ -39,7 +39,18 @@ $(document).ready(function () {
             filters += `${keyVal[0]}=${keyVal[1]}&`
         });
         console.log(filters)
-        return term ? `https://content.guardianapis.com/search?q=${term}&show-blocks=body&${filters}api-key=${key || 'test'}` : null
+        return `https://content.guardianapis.com/search?q=${term}&show-blocks=body&${filters}api-key=${key || 'test'}`
+    }
+
+    function build_aws_api_url (apiID, term="", queueName="guardian-queue", opts=[]) {
+        filters = ""
+        console.log(opts)
+        opts.forEach(keyVal => {
+            console.log(keyVal)
+            filters += `${keyVal[0]}=${keyVal[1]}&`
+        });
+        console.log(filters)
+        return `https://${apiID}.execute-api.eu-west-2.amazonaws.com/dev?query=${term}&queue-name=${queueName}${filters ? '&'+filters : ''}`
     }
 
     $(".clear").click(function () {
@@ -57,7 +68,17 @@ $(document).ready(function () {
         validApi = re.test(apiID)
         console.log(validApi)
         if (validApi){
-            api = `https://${apiID}.execute-api.eu-west-2.amazonaws.com/dev`
+            searchTerm = $("#search-string").val() ? $("#search-string").val() : ""
+            filters = [
+                ["from-date", `${$('#date-from').val()}`],
+                ["to-date", `${$('#date-to').val()}`],
+                ["page-size", `${$('#page-size').val()}`],
+                ["star-rating", `${$('#rating-output').val()}`],
+            ]
+            validFilters = filters.filter(function (element) {
+                if (element[1]) return element
+            })
+            api = build_aws_api_url()
             fetch(api)
                 .then(function (response) {
                     return response.json()
