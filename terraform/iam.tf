@@ -1,7 +1,3 @@
-locals {
-  account_id = data.aws_caller_identity.current.account_id
-}
-
 # resource "aws_iam_role" "lambda_iam_role" {
 #   name = "lambda-iam-role"
 
@@ -20,14 +16,14 @@ locals {
 #   })
 # }
 
-resource "aws_iam_role" "lambda_iam_role" {
+resource "aws_iam_role" "lambda_role" {
   assume_role_policy = data.aws_iam_policy_document.lambda_policy_doc.json
 }
 
 
-resource "aws_iam_policy" "lambda_permissions_policy" {
+resource "aws_iam_policy" "lambda_trust_policy" {
   name        = "lambda_iam_policy"
-  description = "Permissions policy for lambda"
+  description = "trust policy for lambda"
   
   policy = jsonencode({
     Version = "2012-10-17"
@@ -76,9 +72,9 @@ resource "aws_iam_role_policy_attachment" "sqs_policy_attachment" {
   policy_arn = aws_iam_policy.sqs_policy.arn
 }
 
-resource "aws_iam_policy" "sqs_permissions_policy" {
+resource "aws_iam_policy" "sqs_trust_policy" {
   name        = "sqs-iam-policy"
-  description = "Permissions policy for Guardian IAM role"
+  description = "trust policy for Guardian IAM role"
   
   policy = jsonencode({
     Version = "2012-10-17"
@@ -112,9 +108,9 @@ resource "aws_iam_role" "apigw_iam_role" {
   })
 }
 
-resource "aws_iam_policy" "apigw_permissions_policy" {
+resource "aws_iam_policy" "apigw_trust_policy" {
   name        = "apigw-iam-policy"
-  description = "Permissions policy for apigw IAM role"
+  description = "trust policy for apigw IAM role"
   
   policy = jsonencode({
     Version = "2012-10-17"
@@ -137,7 +133,7 @@ resource "aws_iam_role_policy_attachment" "guardian_lambda_full" {
 
 resource "aws_iam_role_policy_attachment" "guardian_lambda" {
   role       = aws_iam_role.lambda_iam_role.name
-  policy_arn = aws_iam_policy.lambda_permissions_policy.arn
+  policy_arn = aws_iam_policy.lambda_trust_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "guardian_apigateway_full" {
@@ -147,12 +143,26 @@ resource "aws_iam_role_policy_attachment" "guardian_apigateway_full" {
 
 resource "aws_iam_role_policy_attachment" "guardian_apigateway" {
   role       = aws_iam_role.apigw_iam_role.name
-  policy_arn = aws_iam_policy.apigw_permissions_policy.arn
+  policy_arn = aws_iam_policy.apigw_trust_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "apigw_logs" {
   role       = aws_iam_role.apigw_iam_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+}
+
+data "aws_iam_policy_document" "send_cw_policy_doc" {
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = [
+      "arn:aws:logs:${local.region}:${local.account_id}:log-group:${aws_cloudwatch_log_group.sqs_send_log_group.name}"
+    ]
+    effect = "Allow"
+  }
 }
 
 data "aws_iam_policy_document" "lambda_policy_doc" {
@@ -190,7 +200,7 @@ resource "aws_iam_role_policy_attachment" "guardian_sqs_full" {
 
 resource "aws_iam_role_policy_attachment" "guardian_sqs" {
   role       = aws_iam_role.sqs_iam_role.name
-  policy_arn = aws_iam_policy.sqs_permissions_policy.arn
+  policy_arn = aws_iam_policy.sqs_trust_policy.arn
 }
 
 resource "aws_lambda_permission" "apigw_send" {
@@ -213,5 +223,5 @@ resource "aws_lambda_permission" "apigw_receive" {
 
 # resource "aws_iam_role_policy_attachment" "guardian_custom_policy" {
 #   role       = aws_iam_role.guardian_iam_role.name
-#   policy_arn = aws_iam_policy.guardian_permissions_policy.arn
+#   policy_arn = aws_iam_policy.guardian_trust_policy.arn
 # }
