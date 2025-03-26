@@ -15,7 +15,7 @@ def lambda_handler(event: dict, context):
     opts = [[opt, params[opt]] for opt in params]
     data = get_guardian_data(query, opts)
     
-    # send(queue_name, json.dumps(data))
+    send(queue_name, json.dumps(data))
 
     return {
         'statusCode': 200,
