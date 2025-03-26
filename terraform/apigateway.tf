@@ -11,12 +11,6 @@ resource "aws_api_gateway_rest_api" "guardian_api" {
   }
 }
 
-# resource "aws_api_gateway_resource" "guardian_resource" {
-#   rest_api_id = aws_api_gateway_rest_api.guardian_api.id
-#   parent_id   = aws_api_gateway_rest_api.guardian_api.root_resource_id
-#   path_part   = "/"
-# }
-
 resource "aws_api_gateway_method" "guardian_method" {
   rest_api_id   = aws_api_gateway_rest_api.guardian_api.id
   resource_id   = aws_api_gateway_rest_api.guardian_api.root_resource_id
@@ -115,6 +109,8 @@ resource "aws_api_gateway_integration_response" "get_integration_response" {
     "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type'"
   }
+  
+  depends_on = [aws_api_gateway_integration.guardian_integration]
 }
 
 resource "aws_api_gateway_deployment" "guardian_deployment" {
