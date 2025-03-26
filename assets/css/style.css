@@ -100,3 +100,20 @@ input[type="range"]::-moz-range-thumb {
     background-size: 1.5em;
     cursor: pointer;
 }
+
+#rating-span-parent{
+    position: relative;
+    width: 120px;
+    height: 10px;
+    top: -2.2rem;
+    .rating-span-text{
+        position: absolute;
+        left: 45%;
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+        background-color:rgb(170, 176, 188);
+        padding-left: 0.2rem;
+        padding-right: 0.2rem;
+    }
+}

@@ -17,7 +17,11 @@ $(document).ready(function () {
         $("#rating").prop("disabled", !ratingEnabled);
         if (ratingEnabled){
             $("#rating-output").val($("#rating").val())
-        }else $("#rating-output").val("")
+            $(".rating-span-text").css("background-color", "rgb(247, 198, 51)")
+        }else {
+            $("#rating-output").val("")
+            $(".rating-span-text").css("background-color", "rgb(170, 176, 188)")
+        }
     })
 
     ratingThumb.on("mouseup", function(){
