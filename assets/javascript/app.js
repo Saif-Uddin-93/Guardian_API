@@ -15,12 +15,15 @@ $(document).ready(function () {
     ratingCheckbox.on("click", function(){
         ratingEnabled = $("#rating-check").prop("checked")
         $("#rating").prop("disabled", !ratingEnabled);
+        if (ratingEnabled){
+            $("#rating-output").val($("#rating").val())
+        }else $("#rating-output").val("")
     })
 
     ratingThumb.on("mouseup", function(){
         rating = $("#rating").val()
         roundedRating = Math.round(rating)
-        console.log(roundedRating)
+        $("#rating-output").val(roundedRating)
         $("#rating").val(roundedRating)
     })
 
