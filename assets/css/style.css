@@ -30,16 +30,73 @@
     background-color: white;
     color: black;
     &:hover{
-        background-color: rgb(45, 45, 45);
+        background-color: rgb(75, 75, 75);
         color: white;
     }
     &:active{
-        background-color: rgb(75, 75, 75);
+        background-color: rgb(100, 100, 100);
     }
 }
-
 iframe{
     min-width: 100% !important;
     min-height : 25rem !important;
     overflow: auto !important;
+}
+span {
+    font-size: 0.8rem;
+    background-color: aliceblue;
+    color: #666;
+}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input {
+    padding: 0.2rem;
+    &[type="number"]{
+        max-width: 3rem;
+        text-align: center;
+    }
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 50%;
+    height: 8px;
+    /* background: #646464; */
+    outline: none;
+    /* opacity: 0.7; */
+    transition: opacity .2s;
+    border-radius: 0.2rem;
+}
+
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background-color: rgb(247, 198, 51);
+    opacity: 1;
+    /* background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gold"><path d="M12 .587l3.668 7.431 8.2 1.193-5.934 5.787 1.4 8.168L12 18.897l-7.334 3.869 1.4-8.168L.132 9.211l8.2-1.193z"/></svg>') no-repeat center; */
+    background-size: 1.5em;
+    cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+    height: 10px;
+    -webkit-appearance: none;
+    background-color: #a2a2a2;
+    margin-top: -5px;
+  }
+
+input[type="range"]::-moz-range-thumb {
+    /* width: 20px;
+    height: 20px; */
+    /* background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="gold"><path d="M12 .587l3.668 7.431 8.2 1.193-5.934 5.787 1.4 8.168L12 18.897l-7.334 3.869 1.4-8.168L.132 9.211l8.2-1.193z"/></svg>') no-repeat center; */
+    background-size: 1.5em;
+    cursor: pointer;
 }

@@ -3,6 +3,22 @@ $(document).ready(function () {
 
     var key = ""
     var articleNumber = 0;
+    var ratingCheckbox = $("#rating-check")
+    var ratingThumb = $('.range-thumb')
+    
+    ratingCheckbox.on("click", function(){
+        if(ratingCheckbox.prop("checked")){
+            $("#rating").prop("disabled", false);
+        }else{
+            $("#rating").prop("disabled", true);
+        }
+    })
+
+    ratingThumb.on("mouseup", function(){
+        rating = $("#rating").val()
+        roundedRating = Math.round(rating)
+        $("#rating").val(roundedRating)
+    })
 
     function build_guardian_api_url (term="", opts=[]) {
         searchTerm = $("#search-string").val() ? $("#search-string").val() : term
