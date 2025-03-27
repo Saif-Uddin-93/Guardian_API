@@ -53,8 +53,8 @@ def cw_log_stream(
 # Function to log to CloudWatch Logs
 def log_to_cloudwatch(
     message,
-    log_group_name='/aws/lambda/LambdaTest',
-    log_stream_name='sqs-creation-stream',
+    log_group_name,
+    log_stream_name,
     client=sts_assume_role().client('logs', region_name=region_name)
 ):
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds

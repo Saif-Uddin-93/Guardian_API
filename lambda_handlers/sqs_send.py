@@ -4,24 +4,31 @@ from utility.api_utils import get_guardian_data
 from utility.aws_utils import (
     create_sqs_queue,
     send_message_to_sqs,
-    sts_assume_role
+    sts_assume_role,
+    log_to_cloudwatch
 )
 
 # call lambda_handler from UI with selected queries
 def lambda_handler(event: dict, context):
-    params = event['params']['querystring']
-    query = params['query']
-    queue_name = params['queue-name']
-    opts = [[opt, params[opt]] for opt in params]
-    data = get_guardian_data(query, opts)
-    
-    send(queue_name, json.dumps(data))
+    message = json.dumps(event)
+    log_to_cloudwatch(
+        message=message,
 
-    return {
-        'statusCode': 200,
-        'guardian': data,
-        'event': json.dumps(event)
-    }
+    )
+    params = event['params']['querystring']
+    queue_name = params['queue-name'] or 'guardian-queue'
+    data = ""
+    # query = params['query']
+    # opts = [[opt, params[opt]] for opt in params]
+    # data = get_guardian_data(query, opts)
+    
+    send(queue_name, message)
+
+    # return {
+    #     'statusCode': 200,
+    #     'guardian': data,
+    #     'event': json.dumps(event)
+    # }
 
 
 def send(queue_name: str, message: str) -> None:

@@ -4,7 +4,7 @@ resource "aws_api_gateway_account" "apigw_account" {
 
 resource "aws_api_gateway_rest_api" "guardian_api" {
   name        = "guardian-api"
-  description = "REST API to retrieve guardian data"
+  description = "REST API to send guardian data to SQS"
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -14,16 +14,16 @@ resource "aws_api_gateway_rest_api" "guardian_api" {
 resource "aws_api_gateway_method" "guardian_method" {
   rest_api_id   = aws_api_gateway_rest_api.guardian_api.id
   resource_id   = aws_api_gateway_rest_api.guardian_api.root_resource_id
-  http_method   = "GET"
+  http_method   = "POST"
   authorization = "NONE"
 
   request_parameters = {
-    "method.request.querystring.query"        = true
-    "method.request.querystring.queue-name"   = true
-    "method.request.querystring.from-date"    = false
-    "method.request.querystring.to-date"      = false
-    "method.request.querystring.page-size"    = false
-    "method.request.querystring.star-rating"  = false
+    "method.request.querystring.queue-name"   = false
+    # "method.request.querystring.query"        = true
+    # "method.request.querystring.from-date"    = false
+    # "method.request.querystring.to-date"      = false
+    # "method.request.querystring.page-size"    = false
+    # "method.request.querystring.star-rating"  = false
   }
 }
 
@@ -31,7 +31,7 @@ resource "aws_api_gateway_integration" "guardian_integration" {
   rest_api_id             = aws_api_gateway_rest_api.guardian_api.id
   resource_id             = aws_api_gateway_rest_api.guardian_api.root_resource_id
   http_method             = aws_api_gateway_method.guardian_method.http_method
-  integration_http_method = "GET"  
+  integration_http_method = "POST"  
   type                    = "AWS"  
   uri                     = aws_lambda_function.sqs_send_lambda.invoke_arn
 }
@@ -46,7 +46,6 @@ resource "aws_api_gateway_deployment" "guardian_deployment" {
   triggers = {
     redeployment = sha1(jsonencode(aws_api_gateway_rest_api.guardian_api))
   }
-
 
   lifecycle {
     create_before_destroy = true
