@@ -4,7 +4,7 @@
             border-radius: 4px !important;
 }
 .note{
-    a{
+    &a{
         text-decoration: none;
         color:#00008c;
         &:hover{
@@ -15,7 +15,7 @@
 
 a{
     text-decoration: none;
-    color:#666;
+    color: inherit;
     &:hover{
         color:white;
     }
