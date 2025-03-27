@@ -8,42 +8,40 @@ README STILL IN PROGRESS
 
 ## Description
 
-A tool to use in conjunction with AWS to query the Guardian's API and retrieve article information as a JSON to be stored in AWS SQS, ready to be consumed by other applications on AWS.
+A tool used in conjunction with AWS to query the Guardian's API and retrieve article information as a JSON to be stored in AWS SQS, ready to be consumed by other applications on AWS.
 
 [Link to deployed web page.](https://saif-uddin-93.github.io/Guardian_API/)
 
 ## User Story
 
-<div style = "
+<!-- <div style = "
 font-family:monospace;
 padding:0.5rem;
 background-color:#f6f8fa;
 color:#1f2328;
-border-radius:0.1rem">
+border-radius:0.1rem"> -->
 AS A coding tutor, I WANT to search relevant articles by Guardian to keep me up to date with the latest in the software space.
-</div>
+<!-- </div> -->
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
-- [Credits](#credits)
-- [Contributing](#contributing)
 - [Tests](#tests)
 - [Questions](#questions)
 
 
 ## Installation
 
-<div style = "
+<!-- <div style = "
 font-family:monospace;
 padding:0.5rem;
 background-color:#f6f8fa;
 color:#1f2328;
-border-radius:0.1rem">
+border-radius:0.1rem"> -->
 In the command line at the root of the project, run "make requirements" (support to run make commands is required)
-</div>
+<!-- </div> -->
 
 ## Usage
 
@@ -52,22 +50,15 @@ AWS keys must be saved to your environment variables seperately.
 ## License
 ### Apache license 2.0 License
 Apache License
-      Version 2.0, January 2004
-   [http://www.apache.org/licenses/](http://www.apache.org/licenses/)
+Version 2.0, January 2004  
+[http://www.apache.org/licenses/](http://www.apache.org/licenses/)
 
 Read "Licence.txt" for license information.
 
-## Credits
-
-N/A
-
-## Contributing
-
-N/A
-
 ## Tests
 
-pytest
+Run the command "pytest" in the command line from the root of the project folder.  
+The pytest.ini file is configured to include additional options.
 
 ## Questions
 I can be contacted via email on, n/a
