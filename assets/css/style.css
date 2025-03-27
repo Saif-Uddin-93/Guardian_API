@@ -3,21 +3,18 @@
        -moz-border-radius: 4px !important;
             border-radius: 4px !important;
 }
-.note{
-    &a{
-        text-decoration: none;
-        color:#00008c;
-        &:hover{
-            color:rgb(145, 93, 193);
-        }
-    }
-}
-
 a{
     text-decoration: none;
     color: inherit;
     &:hover{
         color:white;
+    }
+}
+.note a{
+    text-decoration: none;
+    color:#00008c !important;
+    &:hover{
+        color:rgb(145, 93, 193) !important;
     }
 }
 .card-body{
