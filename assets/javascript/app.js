@@ -111,9 +111,6 @@ $(document).ready(function () {
             .then(function (response) {
                 return response.json();
             }).then(function (data) {
-                console.log(api)
-                console.log(data);
-                console.log(data.response.results);
                 for (i = 0; i < data.response.results.length; i++) {
                     articleNumber++;
                     var article = $("<div>");
