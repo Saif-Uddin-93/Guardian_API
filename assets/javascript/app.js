@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 $(document).ready(function () {
 
     var key = ""
@@ -72,6 +71,7 @@ $(document).ready(function () {
             api = build_aws_api_url(apiID=apiID)
             fetch(api, {
                 method: "POST",  // Specify the HTTP method
+                mode: 'no-cors',
                 headers: {
                   "Content-Type": "application/json"  // Set the request headers
                 },
@@ -80,13 +80,6 @@ $(document).ready(function () {
                 .then(response => response.json())  // Convert response to JSON
                 .then(data => console.log("Success:", data))  // Handle success
                 .catch(error => console.error("Error:", error));  // Handle errors
-              
-            // fetch(api)
-            //     .then(function (response) {
-            //         return response.json()
-            //     }).then(function(data){
-            //         console.log(data)
-            //     })
             }
         })
 
