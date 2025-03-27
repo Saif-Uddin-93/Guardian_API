@@ -67,6 +67,7 @@ $(document).ready(function () {
         const re = /^[a-z0-9]{10,12}$/;
         validApi = re.test(apiID)
         console.log(validApi)
+        console.log(guardianData)
         if (validApi && guardianData){
             api = build_aws_api_url(apiID=apiID)
             fetch(api, {
