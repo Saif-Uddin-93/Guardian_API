@@ -6,6 +6,7 @@ $(document).ready(function () {
     var filterBtn = $("#filter-btn")
     var ratingCheckbox = $("#rating-check")
     var ratingThumb = $(".range-thumb")
+    var guardianData = {}
 
     filterBtn.on("click", function () {
         filtersVisible = $("#filters").prop("hidden")
@@ -42,15 +43,14 @@ $(document).ready(function () {
         return `https://content.guardianapis.com/search?q=${term}&show-blocks=body&${filters}api-key=${key || 'test'}`
     }
 
-    function build_aws_api_url (apiID, term="", queueName="guardian-queue", opts=[]) {
+    function build_aws_api_url (apiID, queueName="guardian-queue", opts=[]) {
         filters = ""
-        console.log(opts)
         opts.forEach(keyVal => {
             console.log(keyVal)
             filters += `${keyVal[0]}=${keyVal[1]}&`
         });
         console.log(filters)
-        return `https://${apiID}.execute-api.eu-west-2.amazonaws.com/dev?query=${term}&queue-name=${queueName}${filters ? '&'+filters : ''}`
+        return `https://${apiID}.execute-api.eu-west-2.amazonaws.com/dev?queue-name=${queueName}${filters ? '&'+filters : ''}`
     }
 
     $(".clear").click(function () {
@@ -67,24 +67,25 @@ $(document).ready(function () {
         const re = /^[a-z0-9]{10,12}$/;
         validApi = re.test(apiID)
         console.log(validApi)
-        if (validApi){
-            searchTerm = $("#search-string").val() ? $("#search-string").val() : ""
-            filters = [
-                ["from-date", `${$('#date-from').val()}`],
-                ["to-date", `${$('#date-to').val()}`],
-                ["page-size", `${$('#page-size').val()}`],
-                ["star-rating", `${$('#rating-output').val()}`],
-            ]
-            validFilters = filters.filter(function (element) {
-                if (element[1]) return element
-            })
-            api = build_aws_api_url()
-            fetch(api)
-                .then(function (response) {
-                    return response.json()
-                }).then(function(data){
-                    console.log(data)
-                })
+        if (validApi && guardianData){
+            api = build_aws_api_url(apiID=apiID)
+            fetch(api, {
+                method: "POST",  // Specify the HTTP method
+                headers: {
+                  "Content-Type": "application/json"  // Set the request headers
+                },
+                body: JSON.stringify(guardianData)  // Convert data to JSON string
+              })
+                .then(response => response.json())  // Convert response to JSON
+                .then(data => console.log("Success:", data))  // Handle success
+                .catch(error => console.error("Error:", error));  // Handle errors
+              
+            // fetch(api)
+            //     .then(function (response) {
+            //         return response.json()
+            //     }).then(function(data){
+            //         console.log(data)
+            //     })
             }
         })
 
@@ -111,6 +112,7 @@ $(document).ready(function () {
             .then(function (response) {
                 return response.json();
             }).then(function (data) {
+                guardianData = data.response
                 for (i = 0; i < data.response.results.length; i++) {
                     articleNumber++;
                     var article = $("<div>");
