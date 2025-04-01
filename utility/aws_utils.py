@@ -8,8 +8,8 @@ role_arn=f'arn:aws:iam::{aws_account_id}:role/{role_name}'
 
 def sts_assume_role(role_arn=role_arn, client=boto3.client('sts')):
     # returning boto3.Session() to avoid errors with 'sts'
-    return boto3.Session()
-    print(role_arn)
+    # return boto3
+    # print(role_arn)
     sts_client = client
 
     try:
