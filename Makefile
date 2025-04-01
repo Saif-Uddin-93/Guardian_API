@@ -114,3 +114,8 @@ git:
 		cd ~/Documents/github/Guardian_API/; \
 		git commit -am '$(m)'; \
 	)
+	@echo ">>> pushing files to github"
+	( \
+		cd ~/Documents/github/Guardian_API/; \
+		git push; \
+	)
