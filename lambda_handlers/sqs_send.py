@@ -11,7 +11,7 @@ from utility.aws_utils import (
 def lambda_handler(event: dict, context):
     message = json.dumps(event)
     log_to_cloudwatch(
-        role = 'lambda-iam-role',
+        role = 'cloudwatch-iam-role',
         message=message,
         log_group_name='/aws/lambda/guardian_sqs_send',
         log_stream_name='sqs_send_log_stream',

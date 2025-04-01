@@ -45,7 +45,7 @@ resource "aws_lambda_function" "sqs_send_lambda" {
   }
   logging_config {
     log_format = "Text"
-    log_group  = "/aws/lambda/sqs_send"
+    log_group  = "/aws/lambda/guardian_sqs_send"
   }
   ephemeral_storage {
     size = 512

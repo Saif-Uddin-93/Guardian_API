@@ -1,3 +1,31 @@
+resource "aws_iam_role" "cloudwatch_iam_role" {
+  name = "cloudwatch-iam-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = [
+            "lambda.amazonaws.com",
+            "apigateway.amazonaws.com",
+            "sqs.amazonaws.com"
+          ]
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "cloudwatch_logs" {
+  name       = "cloudwatch-logs-attachment"
+  roles      = [aws_iam_role.cloudwatch_role.name]
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
+
 resource "aws_iam_role" "lambda_iam_role" {
   name = "lambda-iam-role"
   # name_prefix = ""
@@ -17,7 +45,7 @@ resource "aws_iam_role" "lambda_iam_role" {
 }
 
 resource "aws_iam_policy" "lambda_trust_policy" {
-  name        = "lambda_iam_policy"
+  name        = "lambda-iam-policy"
   description = "trust policy for lambda"
   
   policy = jsonencode({
@@ -195,7 +223,7 @@ resource "aws_lambda_permission" "apigw_receive" {
 }
 
 resource "aws_iam_role" "sqs_iam_role" {
-  name = "sqs_iam_role"
+  name = "sqs-iam-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

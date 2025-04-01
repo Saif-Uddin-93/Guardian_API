@@ -39,7 +39,9 @@ def sts_assume_role(role_name = role_name, role_arn=role_arn, client=boto3.clien
 def cw_log_stream(
         log_group_name,
         log_stream_name,
-        client=sts_assume_role().client('logs', region_name=region_name)
+        client=sts_assume_role(
+            role_name="cloudwatch-iam-role"
+        ).client('logs', region_name=region_name)
     ):
     # print(log_group_name, log_stream_name, client)
     try:
@@ -77,7 +79,7 @@ def log_to_cloudwatch(
 
 def create_iam_role(
         role_name: str=role_name,
-        client=sts_assume_role().client('iam', region_name=region_name)
+        client=boto3.client('iam', region_name=region_name)
     ):
     """
     Create an IAM role with the specified client.
@@ -182,7 +184,9 @@ def create_iam_role(
 # sqs client
 def create_sqs_queue(
         queue_name: str,
-        client=sts_assume_role().client('sqs', region_name=region_name),
+        client=sts_assume_role(
+            role_name='sqs-iam-role',
+        ).client('sqs', region_name=region_name),
         cw=[]):
     """
     Create an SQS queue with the specified name.
@@ -236,7 +240,9 @@ def create_sqs_queue(
 def send_message_to_sqs(
         url: str,
         message: str,
-        client=sts_assume_role().client('sqs', region_name=region_name)
+        client=sts_assume_role(
+            role_name='sqs-iam-role',
+        ).client('sqs', region_name=region_name)
     ):
     """
     Send a message to the specified SQS queue.
@@ -289,7 +295,9 @@ def send_message_to_sqs(
 
 def receive_messages_from_sqs(
         url: str,
-        client=sts_assume_role().client('sqs', region_name=region_name),
+        client=sts_assume_role(
+            role_name='sqs-iam-role',
+        ).client('sqs', region_name=region_name),
         max_messages=10
     ) -> list:
     """
@@ -323,7 +331,9 @@ def create_api(api_name='guardian-api'):
 def apigw_client(
         integration_type='HTTP',
         api_name='guardian-api',
-        client=sts_assume_role().client('apigateway', region_name=region_name)
+        client=sts_assume_role(
+            role_name='apigw-iam-role',
+        ).client('apigateway', region_name=region_name)
     ):
 
     response = None
