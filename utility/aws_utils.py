@@ -207,7 +207,7 @@ def create_sqs_queue(
     # Validate the queue name
     if not re.match(r'^[A-Za-z0-9_-]{1,80}$', queue_name):
         error_message = "Queue name can only include alphanumeric characters, hyphens, or underscores, and must be between 1 and 80 characters."
-        log_to_cloudwatch(error_message, *cw)  # Log to CloudWatch
+        log_to_cloudwatch('sqs-iam-role', error_message, *cw)  # Log to CloudWatch
         raise ValueError(error_message)
 
     # Append the .fifo suffix
