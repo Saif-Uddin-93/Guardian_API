@@ -82,3 +82,35 @@ check-coverage:
 
 ## Run all checks
 run-checks: security-test run-black unit-test check-coverage
+
+
+run-terraform:
+	@echo ">>> About to run terraform..."
+	@echo ">>> Running terraform destroy..."
+	( \
+		cd ~/Documents/github/Guardian_API/terraform/; \
+		terraform destroy -auto-approve; \
+	)
+	@echo ">>> Running terraform init..."
+	( \
+		cd ~/Documents/github/Guardian_API/terraform/; \
+		terraform init; \
+	)
+	@echo ">>> Running terraform plan..."
+	( \
+		cd ~/Documents/github/Guardian_API/terraform/; \
+		terraform plan; \
+	)
+	@echo ">>> Running terraform apply..."
+	( \
+		cd ~/Documents/github/Guardian_API/terraform/; \
+		terraform apply -auto-approve; \
+	)
+
+
+git:
+	@echo ">>> adding files to github with message"
+	( \
+		cd ~/Documents/github/Guardian_API/; \
+		git commit -am '$(m)'; \
+	)
