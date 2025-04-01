@@ -84,7 +84,18 @@ check-coverage:
 run-checks: security-test run-black unit-test check-coverage
 
 
-run-terraform:
+layer-utility:
+	@echo ">>> creating utility layer"
+	( \
+		cd ~/Documents/github/Guardian_API/; \
+		rm -rf utility_layer.zip; \
+		rm -rf ./python/lib/python3.13/site-packages/utility/; \
+		cp -r utility/ ./python/lib/python3.13/site-packages/; \
+		zip -r utility_layer.zip python; \
+	)
+
+
+run-terraform: layer-utility
 	@echo ">>> About to run terraform..."
 	@echo ">>> Running terraform destroy..."
 	( \
@@ -118,14 +129,4 @@ git:
 	( \
 		cd ~/Documents/github/Guardian_API/; \
 		git push; \
-	)
-
-layer-utility:
-	@echo ">>> creating utility layer"
-	( \
-		cd ~/Documents/github/Guardian_API/; \
-		rm -rf utility_layer.zip; \
-		rm -rf ./python/lib/python3.13/site-packages/utility/; \
-		cp -r utility/ ./python/lib/python3.13/site-packages/; \
-		zip -r utility_layer.zip python; \
 	)
