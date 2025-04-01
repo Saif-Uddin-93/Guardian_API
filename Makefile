@@ -119,3 +119,13 @@ git:
 		cd ~/Documents/github/Guardian_API/; \
 		git push; \
 	)
+
+utility:
+	@echo ">>> creating utility layer"
+	( \
+		cd ~/Documents/github/Guardian_API/; \
+		rm -rf utility_layer.zip; \
+		rm -rf ./python/lib/python3.13/site-packages/utility/; \
+		cp -r utility/ ./python/lib/python3.13/site-packages/; \
+		zip -r utility_layer.zip python; \
+	)
