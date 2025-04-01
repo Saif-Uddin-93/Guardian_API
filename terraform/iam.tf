@@ -34,6 +34,7 @@ resource "aws_iam_policy" "lambda_trust_policy" {
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents",
+          "sts:AssumeRole",
         ]
         Resource = [
           "${aws_lambda_function.sqs_receive_lambda.arn}",
