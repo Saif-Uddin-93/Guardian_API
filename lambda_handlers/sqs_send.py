@@ -12,6 +12,8 @@ def lambda_handler(event: dict, context):
     message = json.dumps(event)
     log_to_cloudwatch(
         message=message,
+        log_group_name='/aws/lambda/guardian_sqs_send',
+        log_stream_name='sqs_send_log_stream',
 
     )
     params = event['params']['querystring']

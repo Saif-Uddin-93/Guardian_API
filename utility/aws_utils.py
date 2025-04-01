@@ -57,6 +57,8 @@ def log_to_cloudwatch(
     log_stream_name,
     client=sts_assume_role().client('logs', region_name=region_name)
 ):
+    # Ensure the log stream exists before starting to log
+    cw_log_stream(log_group_name, log_stream_name, client)
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
     client.put_log_events(
         logGroupName=log_group_name,
