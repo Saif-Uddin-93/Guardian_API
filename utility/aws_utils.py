@@ -229,7 +229,8 @@ def create_sqs_queue(
             Attributes={
                 'DelaySeconds': '0',
                 'MessageRetentionPeriod': '259200',  # 3 days
-                'FifoQueue': 'true'
+                'FifoQueue': 'true',
+                'ContentBasedDeduplication': 'true',
             }
         )
     except ClientError as e:
@@ -269,7 +270,6 @@ def send_message_to_sqs(
             QueueUrl=url,
             MessageBody=message,
             MessageGroupId="default-group",
-            ContentBasedDeduplication='true'
         )
 
         # Check if the message was successfully sent
