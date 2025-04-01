@@ -21,7 +21,7 @@ resource "aws_iam_role" "cloudwatch_iam_role" {
 
 resource "aws_iam_policy_attachment" "cloudwatch_logs" {
   name       = "cloudwatch-logs-attachment"
-  roles      = [aws_iam_role.cloudwatch_role.name]
+  roles      = [aws_iam_role.cloudwatch_iam_role.name]
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
