@@ -203,38 +203,29 @@ def create_sqs_queue(
     cw_log_stream(*cw)
     # Strip any leading/trailing whitespaces from the queue_name
     queue_name = queue_name.strip()
-
     # Validate the queue name
-    if not re.match(r'^[A-Za-z0-9_-]{1,80}$', queue_name):
+    if not re.match(r'^[A-Za-z0-9_-]{1,80}$', queue_name): # guardian-queue.fifo
         error_message = "Queue name can only include alphanumeric characters, hyphens, or underscores, and must be between 1 and 80 characters."
-        log_to_cloudwatch('sqs-iam-role', error_message, *cw)  # Log to CloudWatch
-        raise ValueError(error_message)
-
-    # Append the .fifo suffix
-    queue_name_with_suffix = f"{queue_name}.fifo"
-
-    # Check the total length after appending .fifo
-    if len(queue_name_with_suffix) > 80:
-        error_message = "Queue name, including the '.fifo' suffix, must not exceed 80 characters."
-        log_to_cloudwatch("sqs-iam-role", error_message, *cw)  # Log to CloudWatch
+        log_to_cloudwatch('sqs-iam-role', error_message, *cw)
         raise ValueError(error_message)
 
     # Log the queue name being created to CloudWatch
-    log_message = f"Creating queue with name: {queue_name_with_suffix}"
-    log_to_cloudwatch("sqs-iam-role", log_message, *cw)  # Log to CloudWatch
+    log_message = f"Creating queue with name: {queue_name}"
+    log_to_cloudwatch("sqs-iam-role", log_message, *cw)
 
     # Proceed with creating the queue
     try:
         return client.create_queue(
-            QueueName=queue_name_with_suffix,
+            QueueName=queue_name,
             Attributes={
                 'DelaySeconds': '0',
-                'MessageRetentionPeriod': '259200'  # 3 days
+                'MessageRetentionPeriod': '259200',  # 3 days
+                'FifoQueue': 'true'
             }
         )
     except ClientError as e:
         error_message = f"Error creating queue: {e.response['Error']['Message']}"
-        log_to_cloudwatch("sqs-iam-role", error_message, *cw)  # Log to CloudWatch
+        log_to_cloudwatch("sqs-iam-role", error_message, *cw)
         raise
 
 

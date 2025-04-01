@@ -20,7 +20,7 @@ def lambda_handler(event: dict, context):
     
     # params = event['params']['querystring']
     # queue_name = params['queue-name'] or 'guardian-queue'
-    queue_name = 'guardian-queue'
+    queue_name = 'guardian-queue' # guardian-queue.fifo
     # query = params['query']
     # opts = [[opt, params[opt]] for opt in params]
     
@@ -74,7 +74,7 @@ def send(queue_name: str, message: str) -> None:
         ])
         queue_url: str = queue["QueueUrl"]
     else:
-        queue_url: str = sqs_client.get_queue_url(QueueName=f"{queue_name}.fifo")
+        queue_url: str = sqs_client.get_queue_url(QueueName=f"{queue_name}.fifo") # guardian-queue.fifo
         
     send_message_to_sqs(queue_url, message)
 
