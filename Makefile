@@ -95,28 +95,40 @@ layer-utility:
 	)
 
 
-run-terraform: layer-utility
-	@echo ">>> About to run terraform..."
+run-destroy:
 	@echo ">>> Running terraform destroy..."
 	( \
 		cd ~/Documents/github/Guardian_API/terraform/; \
 		terraform destroy -auto-approve; \
 	)
+
+
+run-init:
 	@echo ">>> Running terraform init..."
 	( \
 		cd ~/Documents/github/Guardian_API/terraform/; \
 		terraform init; \
 	)
+
+
+run-plan:
 	@echo ">>> Running terraform plan..."
 	( \
 		cd ~/Documents/github/Guardian_API/terraform/; \
 		terraform plan; \
 	)
+
+
+run-apply:
 	@echo ">>> Running terraform apply..."
 	( \
 		cd ~/Documents/github/Guardian_API/terraform/; \
 		terraform apply -auto-approve; \
 	)
+
+
+run-terraform: layer-utility run-destroy run-init run-plan run-apply
+	@echo ">>> About to run all terraform tasks..."
 
 
 git:
