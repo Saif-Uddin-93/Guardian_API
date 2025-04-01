@@ -1,11 +1,15 @@
 resource "aws_lambda_layer_version" "requests_layer" {
   layer_name          = "requests"
   filename            = "${path.module}/../requests_layer.zip"
+  compatible_runtimes = ["python3.13"]
+  description         = "Requests layer for Lambda functions"
 }
 
 resource "aws_lambda_layer_version" "utility_layer" {
   layer_name          = "utility"
   filename            = "${path.module}/../utility_layer.zip"
+  compatible_runtimes = ["python3.13"]
+  description         = "Utility layer for Lambda functions"
 }
 
 data "archive_file" "sqs_send_lambda" {
