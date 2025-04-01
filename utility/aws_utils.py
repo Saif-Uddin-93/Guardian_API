@@ -267,7 +267,9 @@ def send_message_to_sqs(
     try:
         response = client.send_message(
             QueueUrl=url,
-            MessageBody=message
+            MessageBody=message,
+            MessageGroupId="default-group",
+            ContentBasedDeduplication='true'
         )
 
         # Check if the message was successfully sent
