@@ -58,6 +58,7 @@ resource "aws_iam_policy" "lambda_trust_policy" {
           "sqs:SendMessage",
           "sqs:ReceiveMessage",
           "sqs:DeleteMessage",
+          "sqs:createqueue",
           "sqs:GetQueueAttributes",
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
