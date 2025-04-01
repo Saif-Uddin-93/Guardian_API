@@ -209,14 +209,23 @@ def create_sqs_queue(
         log_to_cloudwatch('sqs-iam-role', error_message, *cw)
         raise ValueError(error_message)
 
+    # Append the .fifo suffix
+    queue_name_with_suffix = f"{queue_name}.fifo"
+
+    # Check the total length after appending .fifo
+    if len(queue_name_with_suffix) > 80:
+        error_message = "Queue name, including the '.fifo' suffix, must not exceed 80 characters."
+        log_to_cloudwatch("sqs-iam-role", error_message, *cw)
+        raise ValueError(error_message)
+
     # Log the queue name being created to CloudWatch
-    log_message = f"Creating queue with name: {queue_name}"
+    log_message = f"Creating queue with name: {queue_name_with_suffix}"
     log_to_cloudwatch("sqs-iam-role", log_message, *cw)
 
     # Proceed with creating the queue
     try:
         return client.create_queue(
-            QueueName=queue_name,
+            QueueName=queue_name_with_suffix,
             Attributes={
                 'DelaySeconds': '0',
                 'MessageRetentionPeriod': '259200',  # 3 days
