@@ -96,25 +96,25 @@ resource "aws_api_gateway_usage_plan" "guardian_usage_plan" {
   }
 }
 
-resource "aws_api_gateway_method" "options_method" {
-  rest_api_id   = aws_api_gateway_rest_api.guardian_api.id
-  resource_id   = aws_api_gateway_rest_api.guardian_api.root_resource_id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
-}
+# resource "aws_api_gateway_method" "options_method" {
+#   rest_api_id   = aws_api_gateway_rest_api.guardian_api.id
+#   resource_id   = aws_api_gateway_rest_api.guardian_api.root_resource_id
+#   http_method   = "OPTIONS"
+#   authorization = "NONE"
+# }
 
-resource "aws_api_gateway_method_response" "options_response" {
-  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
-  resource_id = aws_api_gateway_rest_api.guardian_api.root_resource_id
-  http_method = aws_api_gateway_method.options_method.http_method
-  status_code = "200"
+# resource "aws_api_gateway_method_response" "options_response" {
+#   rest_api_id = aws_api_gateway_rest_api.guardian_api.id
+#   resource_id = aws_api_gateway_rest_api.guardian_api.root_resource_id
+#   http_method = aws_api_gateway_method.options_method.http_method
+#   status_code = "200"
 
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Origin"  = true
-    "method.response.header.Access-Control-Allow-Methods" = true
-    "method.response.header.Access-Control-Allow-Headers" = true
-  }
-}
+#   response_parameters = {
+#     "method.response.header.Access-Control-Allow-Origin"  = true
+#     "method.response.header.Access-Control-Allow-Methods" = true
+#     "method.response.header.Access-Control-Allow-Headers" = true
+#   }
+# }
 
 # resource "aws_api_gateway_integration" "options_integration" {
 #   rest_api_id   = aws_api_gateway_rest_api.guardian_api.id
