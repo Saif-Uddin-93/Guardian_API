@@ -40,9 +40,6 @@ resource "aws_api_gateway_deployment" "guardian_deployment" {
   depends_on  = [aws_api_gateway_integration.guardian_integration]
   rest_api_id = aws_api_gateway_rest_api.guardian_api.id
 
-  # triggers = {
-  #   redeployment = sha1(jsonencode(aws_api_gateway_integration.guardian_integration))
-  # }
   triggers = {
     redeployment = sha1(jsonencode(aws_api_gateway_rest_api.guardian_api))
   }
