@@ -10,18 +10,29 @@ from utility.aws_utils import (
 # call lambda_handler from UI with selected queries
 def lambda_handler(event: dict, context):
     message = json.dumps(event)
+    
     log_to_cloudwatch(
         role = 'cloudwatch-iam-role',
         message=message,
         log_group_name='/aws/lambda/guardian_sqs_send',
         log_stream_name='sqs_send_log_stream',
     )
-    params = event['params']['querystring']
-    queue_name = params['queue-name'] or 'guardian-queue'
+    
+    # params = event['params']['querystring']
+    # queue_name = params['queue-name'] or 'guardian-queue'
+    queue_name = 'guardian-queue'
     # query = params['query']
     # opts = [[opt, params[opt]] for opt in params]
     
     send(queue_name, message)
+
+    return {
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": json.dumps({"message": "Success"})
+    }
 
 
 def send(queue_name: str, message: str) -> None:
@@ -35,7 +46,9 @@ def send(queue_name: str, message: str) -> None:
     Returns:
         None
     """
-    sqs_client = sts_assume_role().client('sqs', 'eu-west-2')
+    sqs_client = sts_assume_role(
+        role_name='sqs-iam-role',
+    ).client('sqs', 'eu-west-2')
     def check_queue_exists(queue_name: str) -> bool:
         """Check if the SQS queue exists.
 

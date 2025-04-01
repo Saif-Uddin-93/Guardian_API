@@ -1,34 +1,35 @@
 import boto3, json, re, time
 from botocore.exceptions import ClientError, BotoCoreError
 
+
 region_name = "eu-west-2"
 aws_account_id = '841162707768'
-role_name = 'guardian-iam-role'
+# role_name = 'guardian-iam-role'
 role_arn=f'arn:aws:iam::{aws_account_id}:role/'
 
-def sts_assume_role(role_name = role_name, role_arn=role_arn, client=boto3.client('sts')):
+def sts_assume_role(role_name, role_arn=role_arn, client=None):
     # returning boto3.Session() to avoid errors with 'sts'
     return boto3
     # print(role_arn)
-    role_arn = f'{role_arn}{role_name}'
-    sts_client = client
+    # role_arn = f'{role_arn}{role_name}'
+    # sts_client = client
 
-    try:
-        assumed_role_object = sts_client.assume_role(
-            RoleArn=role_arn,
-            RoleSessionName=f'{role_name}-Session'
-        )
-        assumed_role_credentials = assumed_role_object['Credentials']
-    except ClientError as e:
-        print(f"Error assuming role: {e.response['Error']['Message']}")
-        exit(1)
+    # try:
+    #     assumed_role_object = sts_client.assume_role(
+    #         RoleArn=role_arn,
+    #         RoleSessionName=f'{role_name}-Session'
+    #     )
+    #     assumed_role_credentials = assumed_role_object['Credentials']
+    # except ClientError as e:
+    #     print(f"Error assuming role: {e.response['Error']['Message']}")
+    #     exit(1)
 
-    return boto3.Session(
-        aws_access_key_id=assumed_role_credentials['AccessKeyId'],
-        aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
-        aws_session_token=assumed_role_credentials['SessionToken'],
-        region_name=region_name
-    )
+    # return boto3.Session(
+    #     aws_access_key_id=assumed_role_credentials['AccessKeyId'],
+    #     aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
+    #     aws_session_token=assumed_role_credentials['SessionToken'],
+    #     region_name=region_name
+    # )
 
 # assumed_role_session = sts_assume_role()
 
@@ -78,7 +79,7 @@ def log_to_cloudwatch(
 # iam_client = assumed_role_session.client('iam', region_name=region_name)
 
 def create_iam_role(
-        role_name: str=role_name,
+        role_name: str,
         client=boto3.client('iam', region_name=region_name)
     ):
     """
