@@ -4,12 +4,13 @@ from botocore.exceptions import ClientError, BotoCoreError
 region_name = "eu-west-2"
 aws_account_id = '841162707768'
 role_name = 'guardian-iam-role'
-role_arn=f'arn:aws:iam::{aws_account_id}:role/{role_name}'
+role_arn=f'arn:aws:iam::{aws_account_id}:role/'
 
-def sts_assume_role(role_arn=role_arn, client=boto3.client('sts')):
+def sts_assume_role(role_name = role_name, role_arn=role_arn, client=boto3.client('sts')):
     # returning boto3.Session() to avoid errors with 'sts'
     # return boto3
     # print(role_arn)
+    role_arn = f'{role_arn}{role_name}'
     sts_client = client
 
     try:
@@ -52,11 +53,14 @@ def cw_log_stream(
 
 # Function to log to CloudWatch Logs
 def log_to_cloudwatch(
+    role,
     message,
     log_group_name,
     log_stream_name,
-    client=sts_assume_role().client('logs', region_name=region_name)
 ):
+    client=sts_assume_role(
+        role_name=role,
+    ).client('logs', region_name=region_name)
     # Ensure the log stream exists before starting to log
     cw_log_stream(log_group_name, log_stream_name)
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
