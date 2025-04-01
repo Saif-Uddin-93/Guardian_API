@@ -120,7 +120,7 @@ git:
 		git push; \
 	)
 
-utility:
+layer-utility:
 	@echo ">>> creating utility layer"
 	( \
 		cd ~/Documents/github/Guardian_API/; \
