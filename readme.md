@@ -1,70 +1,123 @@
-README STILL IN PROGRESS
-- Instructions still need to be completed
-- video guide on entire process
-
-<br><br><br>
-
 # Guardian-API
 
-## Description
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?logo=amazon-web-services&logoColor=white)
+![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
-A tool used in conjunction with AWS to query the Guardian's API and retrieve article information as a JSON to be stored in AWS SQS, ready to be consumed by other applications on AWS.
+## Overview
+Guardian-API is a tool designed to interact with The Guardian's API and retrieve relevant article data in JSON format. The data is then sent to an AWS SQS queue, allowing other AWS applications to consume and process the information efficiently.
 
-[Link to deployed web page.](https://saif-uddin-93.github.io/Guardian_API/)
+[**Live Demo**](https://saif-uddin-93.github.io/Guardian_API/) *(Deployed Web Page)*
+
+---
 
 ## User Story
+> **As a coding tutor,** I want to search for relevant articles from The Guardian to stay up-to-date with the latest in the software development space.
 
-<!-- <div style = "
-font-family:monospace;
-padding:0.5rem;
-background-color:#f6f8fa;
-color:#1f2328;
-border-radius:0.1rem"> -->
-AS A coding tutor, I WANT to search relevant articles by Guardian to keep me up to date with the latest in the software space.
-<!-- </div> -->
+---
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
 - [License](#license)
-- [Tests](#tests)
-- [Questions](#questions)
+- [Testing](#testing)
+- [Contact](#contact)
 
+---
 
 ## Installation
 
-<!-- <div style = "
-font-family:monospace;
-padding:0.5rem;
-background-color:#f6f8fa;
-color:#1f2328;
-border-radius:0.1rem"> -->
-In the command line at the root of the project, run "make requirements" (support to run make commands is required)
-<!-- </div> -->
+To set up the project, follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/saif-uddin-93/Guardian_API.git
+   cd Guardian_API
+   ```
+
+2. Create Virtual Environment:
+   ```bash
+   python -m venv venv
+   ```
+
+3. Activate Virtual Environment (for Linux and Mac OS):
+   ```bash
+   source venv/bin/activate
+   ```
+
+4. Install dependencies:
+   ```bash
+   make requirements
+   ```
+   *(Ensure `make` is installed on your system to run the above command.)*
+
+5. Install Terrform. In Ubuntu and Debian you can run the following command:
+    ```bash
+    sudo apt install terraform
+    ```
+
+6. Optionally, you can install AWS CLI. [Refer to the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+
+---
 
 ## Usage
 
-AWS keys must be saved to your environment variables seperately.
+1. Ensure your AWS credentials are set in your environment variables:
+   ```bash
+   export AWS_ACCESS_KEY_ID="your_access_key"
+   export AWS_SECRET_ACCESS_KEY="your_secret_key"
+   ```
+
+2. Run Terraform commands from the terraform folder:
+    ```bash
+    terraform init
+    terraform plan
+    terraform apply
+    ```
+
+3. Navigate to the deployed Web Page or open the index.html file in project root folder:
+   - Type in a search term and click "Search" to query the Guardian's API. You add filters to your search by clicking on "Filters".
+   - Results appear at the bottom of the page.
+   - Enter you AWS API ID (can be found in the [AWS console](https://eu-west-2.console.aws.amazon.com/apigateway/main/apis?region=eu-west-2))
+   - Click on "send to SQS" to send the articles to an SQS queue named "guardian-queue".
+
+---
 
 ## License
-### Apache license 2.0 License
-Apache License
-Version 2.0, January 2004  
-[http://www.apache.org/licenses/](http://www.apache.org/licenses/)
+This project is licensed under the **Apache License 2.0**. See [LICENSE.txt](LICENSE.txt) for details.
 
-Read "Licence.txt" for license information.
+For more information, visit: [Apache License 2.0](http://www.apache.org/licenses/)
 
-## Tests
+---
 
-Run the command "pytest" in the command line from the root of the project folder.  
-The pytest.ini file is configured to include additional options.
+## Testing
 
-## Questions
-I can be contacted via email on, n/a
-GitHub Profile: [@saif-uddin-93](https://github.com/saif-uddin-93)
+To run tests, use the following command from your project root folder:
 
-## Badges
+```bash
+pytest
+```
 
-[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)
-[![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?logo=amazon-web-services&logoColor=white)](#)
+The `pytest.ini` file includes additional configurations for test execution.
+
+---
+
+## Contact
+
+For any inquiries or questions, feel free to reach out:
+
+- **GitHub**: [@saif-uddin-93](https://github.com/saif-uddin-93)
+- **Email**: _(Not available)_
+
+---
+
+## Future Improvements 🚀
+- [ ] Complete installation and setup documentation.
+- [ ] Add a video walkthrough.
+- [ ] Implement advanced search filtering.
+- [ ] Expand AWS integration features.
+
+---
+
+*README last updated: April 2025*
