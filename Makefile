@@ -7,9 +7,11 @@
 PROJECT_NAME = guardian_api_testing
 REGION = eu-west-2
 PYTHON_INTERPRETER = python
-WD=$(shell pwd)
-PYTHONPATH=${WD}
 SHELL := /bin/bash
+WD=$(shell pwd)
+# PYTHONPATH=$(shell echo $PYTHONPATH | cut -d':' -f1)
+PYTHONPATH=${WD}
+
 PROFILE = default
 PIP:=pip
 
@@ -87,7 +89,7 @@ run-checks: security-test run-black unit-test check-coverage
 layer-utility:
 	@echo ">>> creating utility layer"
 	( \
-		cd ~/Documents/github/Guardian_API/; \
+		cd $(WD)/; \
 		rm -rf utility_layer.zip; \
 		rm -rf ./python/lib/python3.13/site-packages/utility/; \
 		cp -r utility/ ./python/lib/python3.13/site-packages/; \
@@ -98,7 +100,7 @@ layer-utility:
 run-destroy:
 	@echo ">>> Running terraform destroy..."
 	( \
-		cd ~/Documents/github/Guardian_API/terraform/; \
+		cd $(WD)/terraform/; \
 		terraform destroy -auto-approve; \
 	)
 
@@ -106,7 +108,7 @@ run-destroy:
 run-init:
 	@echo ">>> Running terraform init..."
 	( \
-		cd ~/Documents/github/Guardian_API/terraform/; \
+		cd $(WD)/terraform/; \
 		terraform init; \
 	)
 
@@ -114,7 +116,7 @@ run-init:
 run-plan:
 	@echo ">>> Running terraform plan..."
 	( \
-		cd ~/Documents/github/Guardian_API/terraform/; \
+		cd $(WD)/terraform/; \
 		terraform plan; \
 	)
 
@@ -122,7 +124,7 @@ run-plan:
 run-apply:
 	@echo ">>> Running terraform apply..."
 	( \
-		cd ~/Documents/github/Guardian_API/terraform/; \
+		cd $(WD)/terraform/; \
 		terraform apply -auto-approve; \
 	)
 
@@ -134,11 +136,21 @@ run-terraform: layer-utility run-destroy run-init run-plan run-apply
 git:
 	@echo ">>> adding files to github with message"
 	( \
-		cd ~/Documents/github/Guardian_API/; \
+		cd $(WD)/; \
 		git commit -am '$(m)'; \
 	)
 	@echo ">>> pushing files to github"
 	( \
-		cd ~/Documents/github/Guardian_API/; \
+		cd $(WD)/; \
 		git push; \
 	)
+
+
+print-variables:
+	@echo ">>> PYTHONPATH is set to: $(PYTHONPATH)"
+	@echo ">>> Current working directory is: $(WD)"
+	@echo ">>> Current shell is: $(SHELL)"
+	@echo ">>> Current profile is: $(PROFILE)"
+	@echo ">>> Current region is: $(REGION)"
+	@echo ">>> Current python interpreter is: $(PYTHON_INTERPRETER)"
+	@echo ">>> Current pip is: $(PIP)"

@@ -19,11 +19,6 @@ resource "aws_api_gateway_method" "guardian_method" {
 
   request_parameters = {
     "method.request.querystring.queue-name"   = false
-    # "method.request.querystring.query"        = true
-    # "method.request.querystring.from-date"    = false
-    # "method.request.querystring.to-date"      = false
-    # "method.request.querystring.page-size"    = false
-    # "method.request.querystring.star-rating"  = false
   }
 }
 
