@@ -4,7 +4,7 @@
 #
 #################################################################################
 
-PROJECT_NAME = guardian_api_testing
+PROJECT_NAME = guardian_api
 REGION = eu-west-2
 PYTHON_INTERPRETER = python
 SHELL := /bin/bash
@@ -15,21 +15,20 @@ PYTHONPATH=${WD}
 PROFILE = default
 PIP:=pip
 
+# Define utility variable to help calling Python from the virtual environment
+ACTIVATE_ENV := source venv/bin/activate
+
 ## Create python interpreter environment.
 create-environment:
 	@echo ">>> About to create environment: $(PROJECT_NAME)..."
-	@echo ">>> check python3 version"
-	( \
-		$(PYTHON_INTERPRETER) --version; \
-	)
 	@echo ">>> Setting up VirtualEnv."
-# ( \
-#     $(PIP) install -q virtualenv virtualenvwrapper; \
-#     virtualenv venv --python=$(PYTHON_INTERPRETER); \
-# )
-
-# Define utility variable to help calling Python from the virtual environment
-ACTIVATE_ENV := source venv/bin/activate
+	( \
+		python -m venv venv; \
+	)
+	@echo ">>> Activate VirtualEnv."
+	( \
+		$(ACTIVATE_ENV); \
+	)
 
 # Execute python related functionalities from within the project's environment
 define execute_in_env
@@ -89,7 +88,7 @@ run-checks: security-test run-black unit-test check-coverage
 layer-utility:
 	@echo ">>> creating utility layer"
 	( \
-		cd $(WD)/; \
+		cd $(PYTHONPATH)/; \
 		rm -rf utility_layer.zip; \
 		rm -rf ./python/lib/python3.13/site-packages/utility/; \
 		cp -r utility/ ./python/lib/python3.13/site-packages/; \
@@ -100,7 +99,7 @@ layer-utility:
 run-destroy:
 	@echo ">>> Running terraform destroy..."
 	( \
-		cd $(WD)/terraform/; \
+		cd $(PYTHONPATH)/terraform/; \
 		terraform destroy -auto-approve; \
 	)
 
@@ -108,7 +107,7 @@ run-destroy:
 run-init:
 	@echo ">>> Running terraform init..."
 	( \
-		cd $(WD)/terraform/; \
+		cd $(PYTHONPATH)/terraform/; \
 		terraform init; \
 	)
 
@@ -116,7 +115,7 @@ run-init:
 run-plan:
 	@echo ">>> Running terraform plan..."
 	( \
-		cd $(WD)/terraform/; \
+		cd $(PYTHONPATH)/terraform/; \
 		terraform plan; \
 	)
 
@@ -124,7 +123,7 @@ run-plan:
 run-apply:
 	@echo ">>> Running terraform apply..."
 	( \
-		cd $(WD)/terraform/; \
+		cd $(PYTHONPATH)/terraform/; \
 		terraform apply -auto-approve; \
 	)
 
@@ -136,12 +135,12 @@ run-terraform: layer-utility run-destroy run-init run-plan run-apply
 git:
 	@echo ">>> adding files to github with message"
 	( \
-		cd $(WD)/; \
+		cd $(PYTHONPATH)/; \
 		git commit -am '$(m)'; \
 	)
 	@echo ">>> pushing files to github"
 	( \
-		cd $(WD)/; \
+		cd $(PYTHONPATH)/; \
 		git push; \
 	)
 
