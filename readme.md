@@ -11,7 +11,7 @@ Guardian-API is a tool designed to interact with The Guardian's API and retrieve
 <br>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=c8VyVuFl_5A" target="_blank">
+  <a href="https://www.youtube.com/watch?v=c8VyVuFl_5A" target="_blank" rel="noopener noreferrer">
     <b>Video Walkthrough<b>
     <br>
     <img src="https://img.youtube.com/vi/c8VyVuFl_5A/0.jpg" alt="Video guide on project" width="600">
