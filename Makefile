@@ -129,7 +129,7 @@ run-apply:
 	)
 
 
-run-terraform: layer-utility run-destroy run-init run-plan run-apply
+run-terraform: layer-utility run-init run-destroy run-plan run-apply
 	@echo ">>> About to run all terraform tasks..."
 
 
