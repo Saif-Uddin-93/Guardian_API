@@ -8,6 +8,7 @@
 Guardian-API is a tool designed to interact with The Guardian's API and retrieve relevant article data in JSON format. The data is then sent to an AWS SQS queue, allowing other AWS applications to consume and process the information efficiently.
 
 [**Live Demo**](https://saif-uddin-93.github.io/Guardian_API/) *(Deployed Web Page)*
+[**Walkthrough**](https://www.youtube.com/watch?v=c8VyVuFl_5A/) *(Video Guide)*
 
 ---
 
