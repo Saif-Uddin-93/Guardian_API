@@ -91,6 +91,7 @@ layer-utility:
 		cd $(PYTHONPATH)/; \
 		rm -rf utility_layer.zip; \
 		rm -rf ./python/lib/python3.13/site-packages/utility/; \
+		mkdir -p ./python/lib/python3.13/site-packages/; \
 		cp -r utility/ ./python/lib/python3.13/site-packages/; \
 		zip -r utility_layer.zip python; \
 	)
