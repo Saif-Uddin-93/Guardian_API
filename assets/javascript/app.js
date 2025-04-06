@@ -67,21 +67,26 @@ $(document).ready(function () {
         validApi = re.test(apiID)
         console.log(validApi)
         console.log(guardianData)
-        if (validApi && guardianData){
-            api = build_aws_api_url(apiID=apiID)
+        if (validApi && guardianData) {
+            api = build_aws_api_url(apiID = apiID)
             fetch(api, {
                 method: "POST",  // Specify the HTTP method
                 mode: 'no-cors',
                 headers: {
-                  "Content-Type": "application/json"  // Set the request headers
+                    "Content-Type": "application/json"  // Set the request headers
                 },
                 body: JSON.stringify(guardianData)  // Convert data to JSON string
-              })
+            })
                 .then(response => response.json())  // Convert response to JSON
                 .then(data => console.log("Success:", data))  // Handle success
                 .catch(error => console.error("Error:", error));  // Handle errors
-            }
-        })
+            $("#sqs-confirm").prop("hidden", false)
+        }
+    })
+
+    $("#sqs-confirm .btn-close").on("click", ()=>{
+        $("#sqs-confirm").prop("hidden", true)
+    })
 
     $(".search").on("click", function () {
         if(!$("#search-string").val()){

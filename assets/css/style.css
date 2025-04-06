@@ -134,6 +134,54 @@ input[type="range"]::-moz-range-thumb {
     }
 }
 
+.modal{
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgba(255, 245, 238, 0.295);
+    .btn-close{
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: 0.5rem;
+        --bs-btn-close-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23FFFF'><path d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/></svg>")
+    }
+    .modal-body{
+        background: rgb(201,14,101);
+        background: linear-gradient(300deg, rgba(199,0,93,1) 0%, rgba(201,14,101,1) 10%, rgba(203,32,111,1) 85%, rgba(205,93,145,1) 100%);
+        width: 500px;
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+        flex: none;
+        border-radius: 1.5rem !important;
+        box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.5);
+        .modal-header{
+            border: none;
+            margin: auto;
+            h5{
+                color: white;
+                font-size: 2rem;
+                font-weight: 700;
+            }
+        }
+        .modal-content{
+            flex: 4;
+            background: none;
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+        }
+    }
+}
+
 @media screen and (max-width: 1000px) {
     .search-container{
         width: 100% !important;
