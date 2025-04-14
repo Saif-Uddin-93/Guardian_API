@@ -18,11 +18,7 @@ def lambda_handler(event: dict, context):
         log_stream_name='sqs_send_log_stream',
     )
     
-    # params = event['params']['querystring']
-    # queue_name = params['queue-name'] or 'guardian-queue'
-    queue_name = event['queueName'] or 'guardian-queue' # guardian-queue.fifo
-    # query = params['query']
-    # opts = [[opt, params[opt]] for opt in params]
+    queue_name = event['queueName'] or 'guardian-queue'
     
     send(queue_name, message)
 

@@ -60,6 +60,7 @@ def log_to_cloudwatch(
     message,
     log_group_name,
     log_stream_name,
+    # _
 ):
     client=sts_assume_role(
         role_name=role,

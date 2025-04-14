@@ -14,7 +14,7 @@ def test_send_message_to_sqs(sqs_client_fixture, cw_logs_client_fixture):
         cw=[
             "test_group",
             "test_stream",
-            cw_logs_client_fixture
+            # cw_logs_client_fixture
         ]
     )
     queue_url = queue["QueueUrl"]
@@ -32,7 +32,7 @@ def test_send_empty_message_to_sqs(sqs_client_fixture, cw_logs_client_fixture):
         cw=[
             "test_group",
             "test_stream",
-            cw_logs_client_fixture
+            # cw_logs_client_fixture
         ]
     )
     queue_url = queue["QueueUrl"]

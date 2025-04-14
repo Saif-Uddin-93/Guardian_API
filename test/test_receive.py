@@ -1,4 +1,4 @@
-import json, time
+import json
 from utility.aws_utils import (
     create_sqs_queue,
     send_message_to_sqs,
@@ -20,7 +20,7 @@ def test_recieve_messages_from_sqs(sqs_client_fixture, cw_logs_client_fixture):
         cw=[
             "test-group",
             "test-stream",
-            cw_logs_client_fixture
+            # cw_logs_client_fixture
         ]
     )
     queue_url = queue["QueueUrl"]
@@ -44,7 +44,7 @@ def test_receive_json_from_sqs(sqs_client_fixture, cw_logs_client_fixture):
         cw=[
             "test-group",
             "test-stream",
-            cw_logs_client_fixture
+            # cw_logs_client_fixture
         ]
     )
     queue_url = queue["QueueUrl"]
@@ -66,7 +66,7 @@ def test_receive_multiple_messages_from_sqs(sqs_client_fixture, cw_logs_client_f
         cw=[
             "test-group",
             "test-stream",
-            cw_logs_client_fixture
+            # cw_logs_client_fixture
         ]
     )
     queue_url = queue["QueueUrl"]
@@ -91,7 +91,7 @@ def test_receive_no_messages_from_sqs(sqs_client_fixture, cw_logs_client_fixture
         cw=[
             "test-group",
             "test-stream",
-            cw_logs_client_fixture
+            # cw_logs_client_fixture
         ]
     )
     queue_url = queue["QueueUrl"]
