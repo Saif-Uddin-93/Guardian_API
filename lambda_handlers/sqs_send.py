@@ -20,7 +20,7 @@ def lambda_handler(event: dict, context):
     
     # params = event['params']['querystring']
     # queue_name = params['queue-name'] or 'guardian-queue'
-    queue_name = 'guardian-queue' # guardian-queue.fifo
+    queue_name = event['queueName'] or 'guardian-queue' # guardian-queue.fifo
     # query = params['query']
     # opts = [[opt, params[opt]] for opt in params]
     
