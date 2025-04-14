@@ -66,9 +66,11 @@ $(document).ready(function () {
         const re = /^[a-z0-9]{10,12}$/;
         validApi = re.test(apiID)
         console.log(validApi)
-        console.log(guardianData)
         if (validApi && guardianData) {
-            api = build_aws_api_url(apiID = apiID)
+            queue = $("#queue-string").val() ? $("#queue-string").val() : "guardian-queue"
+            guardianData["queueName"] = queue
+            console.log(guardianData)
+            api = build_aws_api_url(apiID = apiID, queueName = queue)
             fetch(api, {
                 method: "POST",  // Specify the HTTP method
                 mode: 'no-cors',
@@ -123,7 +125,6 @@ $(document).ready(function () {
                     description.addClass("description");
                     var iframeFix = data.response.results[i].blocks.body[0].bodyHtml.replace('<iframe height="480" width="854"', "<iframe")
                     description.html(iframeFix);
-                    console.log(description)
                     var number = $("<div class='articleNumber'>").text(`${articleNumber}.`);
                     $(article).append(number, title, description);
                     $("#article-results").append(article);
