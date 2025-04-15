@@ -28,83 +28,86 @@
                     href="https://github.com/Saif-Uddin-93/Guardian_API/blob/main/readme.md" target="_blank">README in
                     GitHub repo</a>
             </div>
-            <div class="card mb-4">
-                <div class="card-header text-light bg-dark">
-                    <i class="fa fa-search" aria-hidden="true"></i> Search Parameters
-                </div>
-                <div class="card-body">
-                    <form>
-                        <div class="mb-3">
-                            <div class="row">
-                                <br>
-                                <label for="search-string" class="form-label">Search Term:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2"
-                                        id="search-string" placeholder="e.g. tech">
-                                </div>
-                            </div>
-                            <br>
-                            <div class="d-flex flex-row justify-content-between">
-                                <div>
-                                    <button type="button" class="btn btn-outline-secondary search">
-                                        <i class="fa fa-search" aria-hidden="true"></i> <a
-                                            href="#article-results">Search</a>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary clear">
-                                        <i class="fa fa-trash" aria-hidden="true"></i> Clear Results
-                                    </button>
-                                </div>
-                                <button type="button" id="filter-btn" class="btn btn-outline-secondary">
-                                    <i class="fa fa-bars" aria-hidden="true"></i> <a href="#filters">Filters</a>
-                                </button>
-                            </div>
-                            <br>
-                            <br>
-                            <div id="filters" hidden>
-                                <p>Filters <span>(optional)</span> :</p>
-                                <div class="mb-2">
-                                    <label for="date-from">Date From:</label>
-                                    <input type="date" id="date-from" class="input-group-text mb-2" name="date-from">
-                                </div>
-                                <div class="mb-2">
-                                    <label for="date-to">Date To:</label>
-                                    <input type="date" id="date-to" class="input-group-text mb-2" name="date-to">
-                                </div>
-                                <div class="mb-2">
-                                    <label for="page-size">Number of articles (max 10):</label>
-                                    <input type="number" id="page-size" class="input-group-text mb-2" name="page-size"
-                                        min="1" max="50" placeholder="10">
-                                </div>
-                                <div>
-                                    <label for="rating" class="me-1">Rating:</label>
-                                    <input type="checkbox" id="rating-check" name="rating-check">
-                                    <span class="me-1">Enable</span>
-                                    <input type="range" id="rating" class="form-range range-thumb me-2" name="rating"
-                                        min="1" max="5" step="0.1" disabled>
-                                    <input type="number" id="rating-output" class="input-group-text mb-2"
-                                        name="rating-output" min="1" max="50" disabled>
-                                    <div id="rating-span-parent">
-                                        <span class="rating-span-text"> out of 5</span>
+            <div class="d-flex gap-4">
+                <div class="card mb-4 w-50">
+                    <div class="card-header text-light bg-dark">
+                        <i class="fa fa-search" aria-hidden="true"></i> Search Parameters
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <div class="row">
+                                    <br>
+                                    <label for="search-string" class="form-label">Search Term:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2"
+                                            id="search-string" placeholder="e.g. tech">
                                     </div>
                                 </div>
                                 <br>
+                                <div class="d-flex flex-row justify-content-between">
+                                    <div>
+                                        <button type="button" class="btn btn-outline-secondary search">
+                                            <i class="fa fa-search" aria-hidden="true"></i> <a
+                                                href="#article-results">Search</a>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary clear">
+                                            <i class="fa fa-trash" aria-hidden="true"></i> Clear Results
+                                        </button>
+                                    </div>
+                                    <button type="button" id="filter-btn" class="btn btn-outline-secondary">
+                                        <i class="fa fa-bars" aria-hidden="true"></i> <a href="#filters">Filters</a>
+                                    </button>
+                                </div>
                                 <br>
-                            </div>
-                            <div class="row">
-                                <label for="aws-api" class="form-label">Input AWS API ID:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2"
-                                        id="aws-api" placeholder="e.g. 4c1d1ea1db">
+                                <br>
+                                <div id="filters" hidden>
+                                    <p>Filters <span>(optional)</span> :</p>
+                                    <div class="mb-2">
+                                        <label for="date-from">Date From:</label>
+                                        <input type="date" id="date-from" class="input-group-text mb-2" name="date-from">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="date-to">Date To:</label>
+                                        <input type="date" id="date-to" class="input-group-text mb-2" name="date-to">
+                                    </div>
+                                    <div class="mb-2">
+                                        <label for="page-size">Number of articles (max 10):</label>
+                                        <input type="number" id="page-size" class="input-group-text mb-2" name="page-size"
+                                            min="1" max="50" placeholder="10">
+                                    </div>
+                                    <div>
+                                        <label for="rating" class="me-1">Rating:</label>
+                                        <input type="checkbox" id="rating-check" name="rating-check">
+                                        <span class="me-1">Enable</span>
+                                        <input type="range" id="rating" class="form-range range-thumb me-2" name="rating"
+                                            min="1" max="5" step="0.1" disabled>
+                                        <input type="number" id="rating-output" class="input-group-text mb-2"
+                                            name="rating-output" min="1" max="50" disabled>
+                                        <div id="rating-span-parent">
+                                            <span class="rating-span-text"> out of 5</span>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <br>
                                 </div>
-                                <label for="queue-string" class="form-label">SQS Queue name:</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2"
-                                        id="queue-string" placeholder="default: guardian-queue">
+                                <div class="row">
+                                    <label for="aws-api" class="form-label">Input AWS API ID:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2"
+                                            id="aws-api" placeholder="e.g. 4c1d1ea1db">
+                                    </div>
+                                    <label for="queue-string" class="form-label">SQS Queue name:</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control mb-2" aria-describedby="sizing-addon2"
+                                            id="queue-string" placeholder="default: guardian-queue">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
+                <iframe class="vid card mb-4 w-50" width="560" height="315" src="https://www.youtube.com/embed/c8VyVuFl_5A?si=pKwHd5BFQgnu7VvR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
         </div>
         <div class="articles-container">

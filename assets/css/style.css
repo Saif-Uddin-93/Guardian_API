@@ -27,8 +27,7 @@ a{
     justify-content: space-between;
 }
 .search-container{
-    width: 50%;
-    min-width: 50%;
+    width: 100%;
     margin: auto;
 }
 .bg-dark{
@@ -53,11 +52,11 @@ a{
         background-color: rgb(100, 100, 100);
     }
 }
-iframe, .element-video{
+/* iframe, .element-video{
     min-width: 100% !important;
     min-height: 25rem !important;
     overflow: auto !important;
-}
+} */
 span {
     font-size: 0.8rem;
     background-color: aliceblue;
@@ -182,8 +181,18 @@ input[type="range"]::-moz-range-thumb {
     }
 }
 
+@media (width < 999px) {
+    .vid{
+        display: none;
+    }
+    .card{
+        width: 100% !important;
+    }
+}
+
 @media screen and (max-width: 1000px) {
     .search-container{
         width: 100% !important;
     }
 }
+
