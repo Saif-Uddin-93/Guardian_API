@@ -4,32 +4,38 @@ from botocore.exceptions import ClientError, BotoCoreError
 
 region_name = "eu-west-2"
 aws_account_id = '841162707768'
-# role_name = 'guardian-iam-role'
+# role_name = 'lambda-iam-role'
 role_arn=f'arn:aws:iam::{aws_account_id}:role/'
 
-def sts_assume_role(role_name, role_arn=role_arn, client=None):
-    # returning boto3.Session() to avoid errors with 'sts'
-    return boto3
+def sts_assume_role(role_name: str, role_arn: str, client='sts'):
+
+    iam = boto3.client('iam')
+    response = iam.get_user()
+    if response['User']['UserName'] == 'root':
+        # print("Root credentials are being used")
+        log_to_cloudwatch(message="Root credentials are being used", role='cloudwatch-iam-role', log_group_name='/aws/lambda/guardian_sqs_send', log_stream_name='sqs_send_log_stream')
+        return boto3.client(client, region_name=region_name)
+    # return boto3
     # print(role_arn)
-    # role_arn = f'{role_arn}{role_name}'
-    # sts_client = client
+    role_arn = f'{role_arn}{role_name}'
+    sts_client = boto3.client(client, region_name=region_name)
 
-    # try:
-    #     assumed_role_object = sts_client.assume_role(
-    #         RoleArn=role_arn,
-    #         RoleSessionName=f'{role_name}-Session'
-    #     )
-    #     assumed_role_credentials = assumed_role_object['Credentials']
-    # except ClientError as e:
-    #     print(f"Error assuming role: {e.response['Error']['Message']}")
-    #     exit(1)
+    try:
+        assumed_role_object = sts_client.assume_role(
+            RoleArn=role_arn,
+            RoleSessionName=f'{role_name}-Session'
+        )
+        assumed_role_credentials = assumed_role_object['Credentials']
+    except ClientError as e:
+        print(f"Error assuming role: {e.response['Error']['Message']}")
+        exit(1)
 
-    # return boto3.Session(
-    #     aws_access_key_id=assumed_role_credentials['AccessKeyId'],
-    #     aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
-    #     aws_session_token=assumed_role_credentials['SessionToken'],
-    #     region_name=region_name
-    # )
+    return boto3.Session(
+        aws_access_key_id=assumed_role_credentials['AccessKeyId'],
+        aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
+        aws_session_token=assumed_role_credentials['SessionToken'],
+        region_name=region_name
+    )
 
 # assumed_role_session = sts_assume_role()
 
@@ -41,8 +47,9 @@ def cw_log_stream(
         log_group_name,
         log_stream_name,
         client=sts_assume_role(
-            role_name="cloudwatch-iam-role"
-        ).client('logs', region_name=region_name)
+            role_name="cloudwatch-iam-role",
+            client='logs'
+        )
     ):
     # print(log_group_name, log_stream_name, client)
     try:
@@ -64,7 +71,8 @@ def log_to_cloudwatch(
 ):
     client=sts_assume_role(
         role_name=role,
-    ).client('logs', region_name=region_name)
+        client='logs',
+    )
     # Ensure the log stream exists before starting to log
     cw_log_stream(log_group_name, log_stream_name)
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
@@ -81,7 +89,7 @@ def log_to_cloudwatch(
 
 def create_iam_role(
         role_name: str,
-        client=boto3.client('iam', region_name=region_name)
+        client=sts_assume_role(role_name='iam-iam-role', client='iam')
     ):
     """
     Create an IAM role with the specified client.
@@ -188,7 +196,8 @@ def create_sqs_queue(
         queue_name: str,
         client=sts_assume_role(
             role_name='sqs-iam-role',
-        ).client('sqs', region_name=region_name),
+            client='sqs',
+        ),
         cw=[]):
     """
     Create an SQS queue with the specified name.
@@ -245,7 +254,8 @@ def send_message_to_sqs(
         message: str,
         client=sts_assume_role(
             role_name='sqs-iam-role',
-        ).client('sqs', region_name=region_name)
+            client='sqs'
+        )
     ):
     """
     Send a message to the specified SQS queue.
@@ -301,7 +311,8 @@ def receive_messages_from_sqs(
         url: str,
         client=sts_assume_role(
             role_name='sqs-iam-role',
-        ).client('sqs', region_name=region_name),
+            client='sqs'
+        ),
         max_messages=10
     ) -> list:
     """
@@ -337,7 +348,8 @@ def apigw_client(
         api_name='guardian-api',
         client=sts_assume_role(
             role_name='apigw-iam-role',
-        ).client('apigateway', region_name=region_name)
+            client='apigateway'
+        )
     ):
 
     response = None
