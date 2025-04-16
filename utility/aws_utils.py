@@ -11,7 +11,8 @@ def sts_assume_role(role_name: str, role_arn: str, client='sts'):
 
     iam = boto3.client('iam')
     response = iam.get_user()
-    if response['User']['UserName'] == 'root':
+    user = response['User']['UserName']
+    if user == 'root':
         # print("Root credentials are being used")
         log_to_cloudwatch(message="Root credentials are being used", role='cloudwatch-iam-role', log_group_name='/aws/lambda/guardian_sqs_send', log_stream_name='sqs_send_log_stream')
         return boto3.client(client, region_name=region_name)
@@ -19,6 +20,8 @@ def sts_assume_role(role_name: str, role_arn: str, client='sts'):
     # print(role_arn)
     role_arn = f'{role_arn}{role_name}'
     sts_client = boto3.client(client, region_name=region_name)
+
+    log_to_cloudwatch(message=f"{user} credentials are being used", role='cloudwatch-iam-role', log_group_name='/aws/lambda/guardian_sqs_send', log_stream_name='sqs_send_log_stream')
 
     try:
         assumed_role_object = sts_client.assume_role(
