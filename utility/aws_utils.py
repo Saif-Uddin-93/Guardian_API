@@ -7,7 +7,7 @@ aws_account_id = '841162707768'
 # role_name = 'lambda-iam-role'
 role_arn=f'arn:aws:iam::{aws_account_id}:role/'
 
-def sts_assume_role(role_name: str, role_arn: str, client='sts'):
+def sts_assume_role(role_name: str, client='sts'):
 
     iam = boto3.client('iam')
     response = iam.get_user()
