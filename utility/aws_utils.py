@@ -20,7 +20,10 @@ def log_to_cloudwatch(
         client='logs',
     )
     # Ensure the log stream exists before starting to log
-    cw_log_stream(log_group_name, log_stream_name)
+    cw_log_stream(
+        log_group_name,
+        log_stream_name
+    )
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
     client.put_log_events(
         logGroupName=log_group_name,
@@ -214,11 +217,13 @@ def create_iam_role(
 # sqs client
 def create_sqs_queue(
         queue_name: str,
+        log_group_name,
+        log_stream_name,
         client=sts_assume_role(
             role_name='sqs-iam-role',
             client='sqs',
         ),
-        cw=[]):
+    ):
     """
     Create an SQS queue with the specified name.
 
@@ -230,17 +235,20 @@ def create_sqs_queue(
         dict: The response from the create_queue call.
     """
     # Ensure the log stream exists before starting to log
-    cw_log_stream(*cw)
+    cw_log_stream(
+        log_group_name,
+        log_stream_name
+    )
     # Strip any leading/trailing whitespaces from the queue_name
     queue_name = queue_name.strip()
     # Validate the queue name
     if not re.match(r'^[A-Za-z0-9_-]{1,80}$', queue_name): # guardian-queue.fifo
         error_message = "Queue name can only include alphanumeric characters, hyphens, or underscores, and must be between 1 and 80 characters."
         log_to_cloudwatch(
-            role='cloudwatch-iam-role', 
-            message=error_message, 
-            log_group_name=cw[0],
-            log_stream_name=cw[1]
+            'cloudwatch-iam-role', 
+            error_message, 
+            log_group_name,
+            log_stream_name
         )
         raise ValueError(error_message)
 
@@ -251,20 +259,20 @@ def create_sqs_queue(
     if len(queue_name_with_suffix) > 80:
         error_message = "Queue name, including the '.fifo' suffix, must not exceed 80 characters."
         log_to_cloudwatch(
-            role='cloudwatch-iam-role', 
-            message=error_message, 
-            log_group_name=cw[0],
-            log_stream_name=cw[1]
+            'cloudwatch-iam-role', 
+            error_message, 
+            log_group_name,
+            log_stream_name
         )
         raise ValueError(error_message)
 
     # Log the queue name being created to CloudWatch
     log_message = f"Creating queue with name: {queue_name_with_suffix}"
     log_to_cloudwatch(
-        role='cloudwatch-iam-role', 
-        message=log_message, 
-        log_group_name=cw[0],
-        log_stream_name=cw[1]
+        'cloudwatch-iam-role', 
+        log_message, 
+        log_group_name,
+        log_stream_name
     )
 
     # Proceed with creating the queue
@@ -281,10 +289,10 @@ def create_sqs_queue(
     except ClientError as e:
         error_message = f"Error creating queue: {e.response['Error']['Message']}"
         log_to_cloudwatch(
-            role='cloudwatch-iam-role', 
-            message=log_message, 
-            log_group_name=cw[0],
-            log_stream_name=cw[1]
+            'cloudwatch-iam-role', 
+            log_message, 
+            log_group_name,
+            log_stream_name
         )
         raise
 

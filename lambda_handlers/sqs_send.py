@@ -64,10 +64,11 @@ def send(queue_name: str, message: str) -> None:
                 raise e
 
     if not check_queue_exists(queue_name):
-        queue = create_sqs_queue(queue_name=queue_name, cw=[
-            "/aws/lambda/guardian_sqs_send",
-            "sqs_send_log_stream"
-        ])
+        queue = create_sqs_queue(
+            queue_name=queue_name, 
+            log_group_name="/aws/lambda/guardian_sqs_send",
+            log_stream_name="sqs_send_log_stream"
+        )
         queue_url: str = queue["QueueUrl"]
     else:
         queue_url: str = sqs_client.get_queue_url(QueueName=f"{queue_name}.fifo") # guardian-queue.fifo
