@@ -31,6 +31,59 @@ resource "aws_api_gateway_integration" "guardian_integration" {
   uri                     = aws_lambda_function.sqs_send_lambda.invoke_arn
 }
 
+
+resource "aws_api_gateway_model" "success_response" {
+  rest_api_id  = aws_api_gateway_rest_api.guardian_api.id
+  name         = "SuccessResponse"
+  content_type = "application/json"
+
+  schema = jsonencode({
+    "$schema"   = "http://json-schema.org/draft-04/schema#",
+    "type"      = "object",
+    "properties" = {
+      "message" = { "type" = "string" }
+    },
+    "required" = ["message"]
+  })
+}
+
+
+
+resource "aws_api_gateway_method_response" "success_response" {
+  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
+  resource_id = aws_api_gateway_rest_api.guardian_api.root_resource_id
+  http_method = aws_api_gateway_method.guardian_method.http_method
+  status_code = "200"
+
+  response_models = {
+    "application/json" = aws_api_gateway_model.success_response.name
+  }
+
+  response_parameters = {
+    "method.response.header.Content-Type" = true
+  }
+}
+
+
+resource "aws_api_gateway_integration_response" "success_response" {
+  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
+  resource_id = aws_api_gateway_rest_api.guardian_api.root_resource_id
+  http_method = aws_api_gateway_method.guardian_method.http_method
+  status_code = "200"
+
+  response_templates = {
+    "application/json" = ""
+  }
+
+  # Optional: header mappings
+  response_parameters = {
+    "method.response.header.Content-Type" = "'application/json'"
+  }
+
+  depends_on = [aws_api_gateway_integration.guardian_integration]
+}
+
+
 resource "aws_api_gateway_deployment" "guardian_deployment" {
   depends_on  = [aws_api_gateway_integration.guardian_integration]
   rest_api_id = aws_api_gateway_rest_api.guardian_api.id
@@ -91,23 +144,6 @@ resource "aws_api_gateway_usage_plan" "guardian_usage_plan" {
   }
 }
 
-resource "aws_api_gateway_integration_response" "success_response" {
-  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
-  resource_id = aws_api_gateway_rest_api.guardian_api.root_resource_id
-  http_method = aws_api_gateway_method.guardian_method.http_method
-  status_code = "200"
-
-  response_templates = {
-    "application/json" = ""
-  }
-
-  # Optional: header mappings
-  response_parameters = {
-    "method.response.header.Content-Type" = "'application/json'"
-  }
-
-  depends_on = [aws_api_gateway_integration.guardian_integration]
-}
 
 
 # resource "aws_api_gateway_method" "options_method" {

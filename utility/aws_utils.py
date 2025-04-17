@@ -32,16 +32,17 @@ def log_to_cloudwatch(
     )
 
 def sts_assume_role(role_name: str, client='sts'):
-
+    return boto3
+    # Function needs debugging. Consistently times out.
     sts = boto3.client('sts')
     identity = sts.get_caller_identity()
     user_arn = identity['Arn']
+    log_to_cloudwatch(
+        role='cloudwatch-iam-role', 
+        message=f"User ARN is {user_arn}", 
+        log_group_name='/aws/lambda/guardian_sqs_send', log_stream_name='sqs_send_log_stream'
+    )
     if user_arn.endswith(':root'):
-        log_to_cloudwatch(
-            role='cloudwatch-iam-role', 
-            message="Root credentials are being used", 
-            log_group_name='/aws/lambda/guardian_sqs_send', log_stream_name='sqs_send_log_stream'
-        )
         return boto3.client(client, region_name=region_name)
     key_word = ':user/'
     index = user_arn.find(key_word)+len(key_word)
