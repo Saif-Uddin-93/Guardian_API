@@ -146,6 +146,22 @@ git:
 	)
 
 
+add-aws-cred:
+	@echo ">>> Setting up AWS credentials..."
+	( \
+		echo "[default]" > ~/.aws/credentials; \
+		echo "aws_access_key_id = $(aws-id)" >> ~/.aws/credentials; \
+		echo "aws_secret_access_key = $(aws-key)" >> ~/.aws/credentials; \
+	)
+
+
+show-aws-cred:
+	@echo ">>> AWS credentials are set up in ~/.aws/credentials"
+	( \
+		cat ~/.aws/credentials; \
+	)
+
+
 print-variables:
 	@echo ">>> PYTHONPATH is set to: $(PYTHONPATH)"
 	@echo ">>> Current working directory is: $(WD)"
