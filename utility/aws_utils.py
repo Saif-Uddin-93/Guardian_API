@@ -20,23 +20,16 @@ def log_to_cloudwatch(
     log_stream_name,
 ):
     
-    # def cw_log_stream(
-    #     log_group_name,
-    #     log_stream_name,
-    #     client=sts_assume_role(
-    #         role_name="cloudwatch-iam-role",
-    #         client='logs'
-    #     )
-    # ):
-    #     # print(log_group_name, log_stream_name, client)
-    #     try:
-    #         client.create_log_group(logGroupName=log_group_name)
-    #         client.create_log_stream(
-    #             logGroupName=log_group_name,
-    #             logStreamName=log_stream_name
-    #         )
-    #     except client.exceptions.ResourceAlreadyExistsException:
-    #         pass  # Log stream already exists
+    client=boto3.client('logs', region_name=region_name)
+    
+    try:
+        client.create_log_group(logGroupName=log_group_name)
+        client.create_log_stream(
+            logGroupName=log_group_name,
+            logStreamName=log_stream_name
+        )
+    except client.exceptions.ResourceAlreadyExistsException:
+        pass  # Log stream already exists
 
     client=boto3.client('logs', region_name=region_name)
     # Ensure the log stream exists before starting to log
@@ -392,6 +385,7 @@ def receive_messages_from_sqs(
 # apigateway client v1
 def create_api(api_name='guardian-api'):
     apigw_client(api_name=api_name)
+
 
 def apigw_client(
         integration_type='HTTP',

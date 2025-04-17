@@ -1,6 +1,8 @@
-import pytest, boto3, os
+import pytest, boto3, os, json
 from moto import mock_aws
-from utility.aws_utils import *
+from utility.aws_utils import (
+    apigw_client,
+)
 
 
 # mock aws credentials
@@ -94,38 +96,39 @@ def iam_client_fixture(boto3_fixture):
 @pytest.fixture()
 def sts_client_fixture(iam_client_fixture):
     with mock_aws():
-        boto3_fixture, _ = iam_client_fixture
-        yield sts_assume_role("role_arn", boto3_fixture.client("sts", region_name="eu-west-2"))
+        # boto3_fixture, _ = iam_client_fixture
+        # yield sts_assume_role("role_arn", 'sts')
+        yield boto3.client('sts', region_name='eu-west-2').session()
 
 
 # mock sqs client
 @pytest.fixture()
-def sqs_client_fixture(sts_client_fixture):
+def sqs_client_fixture():
     with mock_aws():
-        yield sts_client_fixture.client("sqs")
+        yield boto3.client("sqs")
 
 
 # mock lambda client
 @pytest.fixture()
-def lambda_client_fixture(sts_client_fixture):
+def lambda_client_fixture():
     with mock_aws():
-        yield sts_client_fixture.client('lambda')
+        yield boto3.client('lambda')
 
 
 # mock apigateway client v1
 @pytest.fixture()
-def apigw_client_fixture(sts_client_fixture):
+def apigw_client_fixture():
     with mock_aws():
         response = apigw_client(
             integration_type='MOCK',
-            client=sts_client_fixture.client('apigateway'))
+            client=boto3.client('apigateway'))
         client, api_id = response
         yield client, api_id
 
 
 # mock cloudwatch logs client
 @pytest.fixture()
-def cw_logs_client_fixture(sts_client_fixture):
+def cw_logs_client_fixture():
     with mock_aws():
-        yield sts_client_fixture.client('logs')
+        yield boto3.client('logs')
 

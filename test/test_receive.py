@@ -16,12 +16,9 @@ def test_recieve_messages_from_sqs(sqs_client_fixture, cw_logs_client_fixture):
     """
     queue = create_sqs_queue(
         queue_name="Test", 
+        log_group_name="test_group",
+        log_stream_name="test_stream",
         client=sqs_client_fixture, 
-        cw=[
-            "test-group",
-            "test-stream",
-            # cw_logs_client_fixture
-        ]
     )
     queue_url = queue["QueueUrl"]
     message = "Test message."
@@ -40,12 +37,9 @@ def test_receive_json_from_sqs(sqs_client_fixture, cw_logs_client_fixture):
     json_response: str = json.dumps(get_guardian_data("tech"))
     queue = create_sqs_queue(
         queue_name="Test", 
+        log_group_name="test_group",
+        log_stream_name="test_stream",
         client=sqs_client_fixture, 
-        cw=[
-            "test-group",
-            "test-stream",
-            # cw_logs_client_fixture
-        ]
     )
     queue_url = queue["QueueUrl"]
     send_message_to_sqs(url=queue_url, message=json_response, client=sqs_client_fixture)
@@ -62,12 +56,9 @@ def test_receive_multiple_messages_from_sqs(sqs_client_fixture, cw_logs_client_f
     """
     queue = create_sqs_queue(
         queue_name="Test", 
+        log_group_name="test_group",
+        log_stream_name="test_stream",
         client=sqs_client_fixture, 
-        cw=[
-            "test-group",
-            "test-stream",
-            # cw_logs_client_fixture
-        ]
     )
     queue_url = queue["QueueUrl"]
     messages = ["Message 1", "Message 2", "Message 3"]
@@ -87,12 +78,9 @@ def test_receive_no_messages_from_sqs(sqs_client_fixture, cw_logs_client_fixture
     """
     queue = create_sqs_queue(
         queue_name="Test", 
+        log_group_name="test_group",
+        log_stream_name="test_stream",
         client=sqs_client_fixture, 
-        cw=[
-            "test-group",
-            "test-stream",
-            # cw_logs_client_fixture
-        ]
     )
     queue_url = queue["QueueUrl"]
     queue_messages = receive_messages_from_sqs(queue_url, sqs_client_fixture)
