@@ -8,6 +8,10 @@ aws_account_id = '841162707768'
 # role_arn=f'arn:aws:iam::{aws_account_id}:role/'
 
 
+# Ensure log stream exists, if not, create one
+
+
+
 # Function to log to CloudWatch Logs
 def log_to_cloudwatch(
     # role,
@@ -15,12 +19,31 @@ def log_to_cloudwatch(
     log_group_name,
     log_stream_name,
 ):
+    
+    # def cw_log_stream(
+    #     log_group_name,
+    #     log_stream_name,
+    #     client=sts_assume_role(
+    #         role_name="cloudwatch-iam-role",
+    #         client='logs'
+    #     )
+    # ):
+    #     # print(log_group_name, log_stream_name, client)
+    #     try:
+    #         client.create_log_group(logGroupName=log_group_name)
+    #         client.create_log_stream(
+    #             logGroupName=log_group_name,
+    #             logStreamName=log_stream_name
+    #         )
+    #     except client.exceptions.ResourceAlreadyExistsException:
+    #         pass  # Log stream already exists
+
     client=boto3.client('logs', region_name=region_name)
     # Ensure the log stream exists before starting to log
-    cw_log_stream(
-        log_group_name,
-        log_stream_name
-    )
+    # cw_log_stream(
+    #     log_group_name,
+    #     log_stream_name
+    # )
     timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
     client.put_log_events(
         logGroupName=log_group_name,
@@ -89,25 +112,6 @@ def sts_assume_role(role_name: str, client='sts'):
 
 # CloudWatch Logs client setup
 # log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
-
-# Ensure log stream exists, if not, create one
-def cw_log_stream(
-        log_group_name,
-        log_stream_name,
-        client=sts_assume_role(
-            role_name="cloudwatch-iam-role",
-            client='logs'
-        )
-    ):
-    # print(log_group_name, log_stream_name, client)
-    try:
-        client.create_log_group(logGroupName=log_group_name)
-        client.create_log_stream(
-            logGroupName=log_group_name,
-            logStreamName=log_stream_name
-        )
-    except client.exceptions.ResourceAlreadyExistsException:
-        pass  # Log stream already exists
 
 
 def create_iam_role(
@@ -235,10 +239,10 @@ def create_sqs_queue(
         dict: The response from the create_queue call.
     """
     # Ensure the log stream exists before starting to log
-    cw_log_stream(
-        log_group_name,
-        log_stream_name
-    )
+    # cw_log_stream(
+    #     log_group_name,
+    #     log_stream_name
+    # )
     # Strip any leading/trailing whitespaces from the queue_name
     queue_name = queue_name.strip()
     # Validate the queue name
