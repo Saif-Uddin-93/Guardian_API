@@ -7,6 +7,30 @@ aws_account_id = '841162707768'
 # role_name = 'lambda-iam-role'
 role_arn=f'arn:aws:iam::{aws_account_id}:role/'
 
+
+# Function to log to CloudWatch Logs
+def log_to_cloudwatch(
+    role,
+    message,
+    log_group_name,
+    log_stream_name,
+):
+    client=sts_assume_role(
+        role_name=role,
+        client='logs',
+    )
+    # Ensure the log stream exists before starting to log
+    cw_log_stream(log_group_name, log_stream_name)
+    timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
+    client.put_log_events(
+        logGroupName=log_group_name,
+        logStreamName=log_stream_name,
+        logEvents=[{
+            'timestamp': timestamp,
+            'message': message
+        }]
+    )
+
 def sts_assume_role(role_name: str, client='sts'):
 
     sts = boto3.client('sts')
@@ -74,30 +98,6 @@ def cw_log_stream(
     except client.exceptions.ResourceAlreadyExistsException:
         pass  # Log stream already exists
 
-# Function to log to CloudWatch Logs
-def log_to_cloudwatch(
-    role,
-    message,
-    log_group_name,
-    log_stream_name,
-):
-    client=sts_assume_role(
-        role_name=role,
-        client='logs',
-    )
-    # Ensure the log stream exists before starting to log
-    cw_log_stream(log_group_name, log_stream_name)
-    timestamp = int(time.time() * 1000)  # CloudWatch expects timestamp in milliseconds
-    client.put_log_events(
-        logGroupName=log_group_name,
-        logStreamName=log_stream_name,
-        logEvents=[{
-            'timestamp': timestamp,
-            'message': message
-        }]
-    )
-
-# iam_client = assumed_role_session.client('iam', region_name=region_name)
 
 def create_iam_role(
         role_name: str,
