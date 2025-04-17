@@ -91,6 +91,25 @@ resource "aws_api_gateway_usage_plan" "guardian_usage_plan" {
   }
 }
 
+resource "aws_api_gateway_integration_response" "success_response" {
+  rest_api_id = aws_api_gateway_rest_api.guardian_api.id
+  resource_id = aws_api_gateway_rest_api.guardian_api.root_resource_id
+  http_method = aws_api_gateway_method.guardian_method.http_method
+  status_code = "200"
+
+  response_templates = {
+    "application/json" = ""
+  }
+
+  # Optional: header mappings
+  response_parameters = {
+    "method.response.header.Content-Type" = "'application/json'"
+  }
+
+  depends_on = [aws_api_gateway_integration.guardian_integration]
+}
+
+
 # resource "aws_api_gateway_method" "options_method" {
 #   rest_api_id   = aws_api_gateway_rest_api.guardian_api.id
 #   resource_id   = aws_api_gateway_rest_api.guardian_api.root_resource_id

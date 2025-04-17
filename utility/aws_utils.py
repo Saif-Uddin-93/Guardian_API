@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError, BotoCoreError
 region_name = "eu-west-2"
 aws_account_id = '841162707768'
 # role_name = 'lambda-iam-role'
-role_arn=f'arn:aws:iam::{aws_account_id}:role/'
+# role_arn=f'arn:aws:iam::{aws_account_id}:role/'
 
 
 # Function to log to CloudWatch Logs
@@ -46,8 +46,9 @@ def sts_assume_role(role_name: str, client='sts'):
     key_word = ':user/'
     index = user_arn.find(key_word)+len(key_word)
     user_name = user_arn[index:]
-    global role_arn
-    role_arn = f'{role_arn}{role_name}'
+    # global role_arn
+    # role_arn = f'{role_arn}{role_name}'
+    role_arn = f'arn:aws:iam::{aws_account_id}:role/{role_name}'
     sts_client = boto3.client(client, region_name=region_name)
 
     log_to_cloudwatch(
@@ -64,7 +65,13 @@ def sts_assume_role(role_name: str, client='sts'):
         )
         assumed_role_credentials = assumed_role_object['Credentials']
     except ClientError as e:
-        print(f"Error assuming role: {e.response['Error']['Message']}")
+        # print(f"Error assuming role: {e.response['Error']['Message']}")
+        log_to_cloudwatch(
+            role='cloudwatch-iam-role', 
+            message=f"Error assuming role: {e.response['Error']['Message']}", 
+            log_group_name='/aws/lambda/guardian_sqs_send', 
+            log_stream_name='sqs_send_log_stream'
+        )
         exit(1)
 
     return boto3.Session(
