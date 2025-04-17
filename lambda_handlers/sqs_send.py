@@ -44,7 +44,8 @@ def send(queue_name: str, message: str) -> None:
     """
     sqs_client = sts_assume_role(
         role_name='sqs-iam-role',
-    ).client('sqs', 'eu-west-2')
+        client='sqs'
+    )
     def check_queue_exists(queue_name: str) -> bool:
         """Check if the SQS queue exists.
 
