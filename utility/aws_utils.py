@@ -10,15 +10,12 @@ aws_account_id = '841162707768'
 
 # Function to log to CloudWatch Logs
 def log_to_cloudwatch(
-    role,
+    # role,
     message,
     log_group_name,
     log_stream_name,
 ):
-    client=sts_assume_role(
-        role_name=role,
-        client='logs',
-    )
+    client=boto3.client('logs', region_name=region_name)
     # Ensure the log stream exists before starting to log
     cw_log_stream(
         log_group_name,
@@ -35,16 +32,17 @@ def log_to_cloudwatch(
     )
 
 def sts_assume_role(role_name: str, client='sts'):
-    return boto3
+    # return boto3
     # Function needs debugging. Consistently times out.
     sts = boto3.client('sts')
     identity = sts.get_caller_identity()
     user_arn = identity['Arn']
     log_to_cloudwatch(
-        role='cloudwatch-iam-role', 
+        # role='cloudwatch-iam-role', 
         message=f"User ARN is {user_arn}", 
         log_group_name='/aws/lambda/guardian_sqs_send', log_stream_name='sqs_send_log_stream'
     )
+    return boto3.client(client, region_name=region_name)
     if user_arn.endswith(':root'):
         return boto3.client(client, region_name=region_name)
     key_word = ':user/'
@@ -53,10 +51,10 @@ def sts_assume_role(role_name: str, client='sts'):
     # global role_arn
     # role_arn = f'{role_arn}{role_name}'
     role_arn = f'arn:aws:iam::{aws_account_id}:role/{role_name}'
-    sts_client = boto3.client(client, region_name=region_name)
+    sts_client = boto3.client('sts', region_name=region_name)
 
     log_to_cloudwatch(
-        role='cloudwatch-iam-role', 
+        # role='cloudwatch-iam-role', 
         message=f"{user_name} credentials are being used", 
         log_group_name='/aws/lambda/guardian_sqs_send', 
         log_stream_name='sqs_send_log_stream'
@@ -71,19 +69,21 @@ def sts_assume_role(role_name: str, client='sts'):
     except ClientError as e:
         # print(f"Error assuming role: {e.response['Error']['Message']}")
         log_to_cloudwatch(
-            role='cloudwatch-iam-role', 
+            # role='cloudwatch-iam-role', 
             message=f"Error assuming role: {e.response['Error']['Message']}", 
             log_group_name='/aws/lambda/guardian_sqs_send', 
             log_stream_name='sqs_send_log_stream'
         )
         exit(1)
 
-    return boto3.Session(
+    assumed_role_session =  boto3.Session(
         aws_access_key_id=assumed_role_credentials['AccessKeyId'],
         aws_secret_access_key=assumed_role_credentials['SecretAccessKey'],
         aws_session_token=assumed_role_credentials['SessionToken'],
         region_name=region_name
     )
+
+    return assumed_role_session.client(client, region_name=region_name)
 
 # assumed_role_session = sts_assume_role()
 
