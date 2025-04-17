@@ -48,30 +48,26 @@ def log_to_cloudwatch(
     )
 
 def sts_assume_role(role_name: str, client='sts'):
-    # return boto3
-    # Function needs debugging. Consistently times out.
     sts = boto3.client('sts')
     identity = sts.get_caller_identity()
     user_arn = identity['Arn']
     log_to_cloudwatch(
-        # # role='cloudwatch-iam-role', 
         message=f"User ARN is {user_arn}", 
-        log_group_name='/aws/lambda/guardian_sqs_send', log_stream_name='sqs_send_log_stream'
+        log_group_name='/aws/lambda/guardian_sqs_send', 
+        log_stream_name='sqs_send_log_stream'
     )
+    # Function needs debugging to get working with assume role.
     return boto3.client(client, region_name=region_name)
-    if user_arn.endswith(':root'):
-        return boto3.client(client, region_name=region_name)
-    key_word = ':user/'
-    index = user_arn.find(key_word)+len(key_word)
-    user_name = user_arn[index:]
-    # global role_arn
-    # role_arn = f'{role_arn}{role_name}'
+    # if user_arn.endswith(':root'):
+    #     return boto3.client(client, region_name=region_name)
+    # key_word = ':user/' if ':user/' in user_arn else ':assumed-role/'
+    # index = user_arn.find(key_word)+len(key_word)
+    # user_name = user_arn[index:]
     role_arn = f'arn:aws:iam::{aws_account_id}:role/{role_name}'
     sts_client = boto3.client('sts', region_name=region_name)
 
     log_to_cloudwatch(
-        # # role='cloudwatch-iam-role', 
-        message=f"{user_name} credentials are being used", 
+        message=f"{user_arn} credentials are being used", 
         log_group_name='/aws/lambda/guardian_sqs_send', 
         log_stream_name='sqs_send_log_stream'
     )
@@ -83,9 +79,7 @@ def sts_assume_role(role_name: str, client='sts'):
         )
         assumed_role_credentials = assumed_role_object['Credentials']
     except ClientError as e:
-        # print(f"Error assuming role: {e.response['Error']['Message']}")
         log_to_cloudwatch(
-            # # role='cloudwatch-iam-role', 
             message=f"Error assuming role: {e.response['Error']['Message']}", 
             log_group_name='/aws/lambda/guardian_sqs_send', 
             log_stream_name='sqs_send_log_stream'
@@ -106,110 +100,6 @@ def sts_assume_role(role_name: str, client='sts'):
 # CloudWatch Logs client setup
 # log_stream_name = 'sqs-creation-stream'  # CloudWatch Log Stream
 
-
-def create_iam_role(
-        role_name: str,
-        client=sts_assume_role(role_name='iam-iam-role', client='iam')
-    ):
-    """
-    Create an IAM role with the specified client.
-
-    Parameters:
-        client (boto3.client): The IAM client to use for creating the role.
-
-    Returns:
-        tuple: The Role ID and Role ARN of the created IAM role.
-    """
-
-    # policies commented out. policies don't exist in moto3 testing suite
-    # policies = [
-    #     'arn:aws:iam::aws:policy/AWSLambda_FullAccess',
-    #     'arn:aws:iam::aws:policy/AmazonAPIGatewayAdministrator',
-    #     'arn:aws:iam::aws:policy/AmazonSQSFullAccess'
-    # ]
-
-    trust_policy_doc = json.dumps({
-        "Version": "2012-10-17",
-        "Statement": [
-            {
-                "Effect": "Allow",
-                "Principal": {
-                    "Service": [
-                        "lambda.amazonaws.com"
-                    ]
-                },
-                "Action": "sts:AssumeRole"
-            }
-        ]
-    })
-
-    try:
-        # Check if the role already exists
-        try:
-            existing_role = client.get_role(RoleName=role_name)
-            print(f"Role {role_name} already exists.")
-            return existing_role['Role']['RoleId'], existing_role['Role']['Arn']
-        except client.exceptions.NoSuchEntityException:
-            print(f"Role {role_name} does not exist. Creating a new role.")
-        role_response = client.create_role(
-            RoleName=role_name,
-            AssumeRolePolicyDocument=trust_policy_doc
-        )
-
-        permissions_policy_doc = json.dumps({
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Effect": "Allow",
-                    "Action": [
-                        "lambda:*",
-                        "sqs:*",
-                        "sqs:CreateQueue",
-                        "sqs:GetQueueAttributes",
-                        "apigateway:*",
-                        "logs:CreateLogStream",
-                        "logs:PutLogEvents"
-                    ],
-                    "Resource": "*"
-                }
-            ]
-        })
-
-        # Create and attach the permissions policy
-        policy_response = client.create_policy(
-            PolicyName=f'{role_name}-policy',
-            PolicyDocument=permissions_policy_doc
-        )
-
-        policy_arn = policy_response['Policy']['Arn']
-
-        client.attach_role_policy(
-            RoleName=role_name,
-            PolicyArn=policy_arn
-        )
-
-        # for policy in policies:
-        #     client.attach_role_policy(
-        #         RoleName=role_name,
-        #         PolicyArn=policy
-        #     )
-
-        role_arn = role_response['Role']['Arn']
-        role_id = client.get_role(RoleName=role_name)['Role']['RoleId']
-
-        return role_id, role_arn
-
-    except ClientError as e:
-        print(f"ClientError: {e.response['Error']['Message']}")
-        return None, None
-
-    except BotoCoreError as e:
-        print(f"BotoCoreError: {str(e)}")
-        return None, None
-
-    except Exception as e:
-        print(f"Unexpected error: {str(e)}")
-        return None, None
 
 # sqs client
 def create_sqs_queue(
