@@ -63,7 +63,7 @@ resource "aws_iam_policy" "lambda_trust_policy" {
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents",
-          "iam:GetUser",
+          "sts:GetCallerIdentity",
           "sts:AssumeRole",
         ]
         Resource = [
