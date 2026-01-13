@@ -1,4 +1,5 @@
-$(document).ready(function () {
+// $(document).ready(function () {
+jQuery(function(){
 
     var key = ""
     var articleNumber = 0;
