@@ -53,7 +53,7 @@ jQuery(function(){
         return `https://${apiID}.execute-api.eu-west-2.amazonaws.com/dev?queue-name=${queueName}${filters ? '&'+filters : ''}`
     }
 
-    $(".clear").click(function () {
+    $(".clear").on("click", function () {
         articleNumber = 0;
         $("#search-string").val("");
         $("#article-results").empty();
